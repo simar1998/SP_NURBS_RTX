@@ -101,6 +101,7 @@ namespace obj {
     }
 
 
+
     template <typename T>
     inline std::vector<Tri<T,3>> load_stl_from_stream(std::ifstream& is){
 
@@ -165,12 +166,25 @@ namespace obj {
         }
     }
 
+    template <typename T>
+    void print_triangles(const std::vector<Tri<T, 3>>& triangles) {
+        for (const auto& tri : triangles) {
+            std::cout << "p0: " << tri.p0 << "\n";
+            std::cout << "p1: " << tri.p1 << "\n";
+            std::cout << "p2: " << tri.p2 << "\n";
+            std::cout << "-------------\n";
+        }
+    }
+
 } // namespace obj
+
 
 template <typename T>
 std::vector<Tri<T, 3>> load_obj(const std::string& file) {
-    return obj::load_from_file<T>(file);
+    auto tris =  obj::load_from_file<T>(file);
+    return tris;
 }
+
 
 template std::vector<Tri<float, 3>> load_obj(const std::string&);
 template std::vector<Tri<double, 3>> load_obj(const std::string&);

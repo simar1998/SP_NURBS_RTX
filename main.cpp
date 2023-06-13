@@ -40,6 +40,17 @@ void testNurbs(){
     crv.degree = 2;
 }
 
+//Acessing values now works
+void print_tri(std::string filePath){
+    std::vector<Tri> tris = load_obj<Scalar>(filePath);
+
+    for(std::size_t i = 0; i <tris.size(); i++){
+        Tri tri = tris[i];
+        std::cout << "P0 : [" << tri.p0.values[0] << ", " << tri.p0.values[1] << ", " << tri.p0.values[2] << "]" << std::endl;
+        std::cout << "P1 : [" << tri.p1.values[0] << ", " << tri.p1.values[1] << ", " << tri.p1.values[2] << "]" << std::endl;
+        std::cout << "P2 : [" << tri.p2.values[0] << ", " << tri.p2.values[1] << ", " << tri.p2.values[2] << "]" << std::endl;
+    }
+}
 
 int main() {
     std::cout << "Welcome to Sculpt Path" << std::endl;
@@ -50,6 +61,7 @@ int main() {
     //testMesh(filePath);
     MeshIntersect meshIntersect;
     meshIntersect.loadMesh(filePath);
+    print_tri(filePath);
     auto ray = Ray {
             Vec3(0., 0.,0.3), // Ray origin
             Vec3(0., 0., 1.), // Ray direction
