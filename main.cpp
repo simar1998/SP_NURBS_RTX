@@ -2,6 +2,9 @@
 #include "stl_header.h"
 #include <string>
 #include "include/tinynurbs/tinynurbs.h"
+#include "simple_example.h"
+#include "MeshIntersect.h"
+
 void printTriangles(const std::string filePath) {
     try{
         stl_reader::StlMesh<float, unsigned int> mesh (filePath);
@@ -26,6 +29,7 @@ void printTriangles(const std::string filePath) {
     }
 }
 
+
 void testNurbs(){
     tinynurbs::Curve<float> crv; // Planar curve using float32
     crv.control_points = {glm::vec3(-1, 0, 0), // std::vector of 3D points
@@ -41,8 +45,18 @@ int main() {
     std::cout << "Welcome to Sculpt Path" << std::endl;
     std::string filePath = R"(C:\Code\SculptPlane\np_cube.stl)";
     std::cout<<"Loading file : "<<filePath <<std::endl;
-    printTriangles(filePath);
-    //testNurbs();
+    testNurbs();
+    //testMesh(filePath);
+    MeshIntersect meshIntersect;
+    meshIntersect.loadMesh(filePath);
+    auto ray = Ray {
+            Vec3(0., 0., 0.), // Ray origin
+            Vec3(0., 0., 1.), // Ray direction
+            0.,               // Minimum intersection distance
+            100.              // Maximum intersection distance
+    };
+    meshIntersect.perform_intersect(ray);
+
 
 }
 
