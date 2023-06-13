@@ -41,14 +41,14 @@ int MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar, 3> ray) {
 
     static constexpr size_t invalid_id = std::numeric_limits<size_t>::max();
     static constexpr size_t stack_size = 64;
-    static constexpr bool use_robust_traversal = true;
+    static constexpr bool use_robust_traversal = false;
 
     auto prim_id = invalid_id;
     Scalar u, v;
 
     // Traverse the BVH and get the u, v coordinates of the closest intersection.
     bvh::v2::SmallStack<Bvh::Index, stack_size> stack;
-    bvh.intersect<false, use_robust_traversal>(ray, bvh.get_root().index, stack,
+    bvh.intersect<true, use_robust_traversal>(ray, bvh.get_root().index, stack,
                                                [&] (size_t begin, size_t end) {
                                                    for (size_t i = begin; i < end; ++i) {
                                                        size_t j = should_permute ? i : bvh.prim_ids[i];
