@@ -11,6 +11,11 @@
 
 #include <iostream>
 
+//
+// Created by simar on 6/12/2023.
+//
+
+
 using Scalar  = float;
 using Vec3    = bvh::v2::Vec<Scalar, 3>;
 using BBox    = bvh::v2::BBox<Scalar, 3>;

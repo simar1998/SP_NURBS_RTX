@@ -74,4 +74,18 @@ int MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar, 3> ray) {
 
 }
 
+void MeshIntersect::print_triangles() {
+    if (tris.size() > 0) {
+        for (std::size_t i = 0; i < tris.size(); i++) {
+            Tri tri = tris[i];
+            std::cout << "P0 : [" << tri.p0.values[0] << ", " << tri.p0.values[1] << ", " << tri.p0.values[2] << "]"
+                      << std::endl;
+            std::cout << "P1 : [" << tri.p1.values[0] << ", " << tri.p1.values[1] << ", " << tri.p1.values[2] << "]"
+                      << std::endl;
+            std::cout << "P2 : [" << tri.p2.values[0] << ", " << tri.p2.values[1] << ", " << tri.p2.values[2] << "]"
+                      << std::endl;
+        }
+    }
+}
+
 
