@@ -40,6 +40,8 @@ public:
     void planeIntersect(float z);
 
     void getMinMax();
+
+    void planeIntersect2(float z);
 };
 
 

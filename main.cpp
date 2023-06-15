@@ -55,9 +55,9 @@ int main() {
     //testMesh(filePath);
     MeshIntersect meshIntersect;
     meshIntersect.loadMesh(filePath);
-    meshIntersect.print_triangles();
+    //meshIntersect.print_triangles();
     meshIntersect.getMinMax();
-    meshIntersect.planeIntersect(-1.0f);
+    meshIntersect.planeIntersect(1.5f);
     auto ray = Ray {
             Vec3(0., 0.,0.3), // Ray origin
             Vec3(0., 0., 1.), // Ray direction

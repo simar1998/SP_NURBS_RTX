@@ -77,12 +77,13 @@ int MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar, 3> ray) {
 
 }
 //TODO not working right, possibly wrong output
-void MeshIntersect::planeIntersect(float z) {
+void MeshIntersect::planeIntersect2(float z) {
     Vec3 planePoint(0.0f, 0.0f, z);
     Vec3 normal(0.0f, 0.0f, 1.0f);
     auto zPlane = Plane(planePoint, normal);
     auto epsVal = 1e-6f;
     std::list<Vec3> intersectionPoints;
+    print_triangles();
     for (std::size_t i = 0; i < tris.size(); i++) {
         Tri tri = tris[i];
         //Computing triangle edges and their cross product
@@ -124,6 +125,30 @@ void MeshIntersect::planeIntersect(float z) {
     }
 }
 
+//This gives good values for plane intersect
+void MeshIntersect::planeIntersect(float z) {
+    Vec3 planePoint(0.0f, 0.0f, z);
+    Vec3 normal(0.0f, 0.0f, 1.0f);
+    Plane zPlane(planePoint, normal);
+   // print_triangles();
+    for (std::size_t i = 0; i < tris.size(); i++) {
+        Tri tri = tris[i];
+        Vec3 edges[3] = {tri.p1 - tri.p0, tri.p2 - tri.p1, tri.p0 - tri.p2}; //edges of triangle
+        Vec3 points[3] = {tri.p0, tri.p1, tri.p2}; //points of triangle
+        for (int j = 0; j < 3; j++){
+            Vec3 direction = edges[j];
+            Vec3 origin = points[j];
+            float denom = dot(normal, direction);
+            if (std::abs(denom) > 1e-6) { //check if line is not parallel to plane
+                float t = dot(planePoint - origin, normal) / denom;
+                if (t >= 0 && t <= 1) { //check if intersection is on the line segment (edge)
+                    Vec3 intersection = origin + direction * t;
+                    std::cout << "Point calculated at : " << intersection.values[0] << "," << intersection.values[1] <<"," << intersection.values[2] << " For triangle num " << i << std::endl;
+                }
+            }
+        }
+    }
+}
 
 void MeshIntersect::print_triangles() {
     if (tris.size() > 0) {
