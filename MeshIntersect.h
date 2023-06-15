@@ -29,13 +29,17 @@ class MeshIntersect {
     using Ray = bvh::v2::Ray<Scalar, 3>;
     std::vector<Tri> tris;
     using PrecomputedTri = bvh::v2::PrecomputedTri<Scalar>;
-
+    using Plane = bvh::v2::Plane<float,3>;
 
 
 public:
     void loadMesh(std::string filePath);
     int perform_intersect(bvh::v2::Ray<Scalar, 3> ray);
     void print_triangles();
+
+    void planeIntersect(float z);
+
+    void getMinMax();
 };
 
 

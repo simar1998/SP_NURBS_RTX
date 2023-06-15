@@ -53,6 +53,15 @@ namespace bvh::v2 {
     }
 
     template <typename T, size_t N>
+    struct Plane {
+        Vec<T, 3> point;   // Point on the plane
+        Vec<T, 3> normal;  // Normal vector of the plane
+
+        Plane() = default;
+        BVH_ALWAYS_INLINE Plane(const Vec<T, 3>& p, const Vec<T, 3>& n) : point(p), normal(n) {}
+    };
+
+    template <typename T, size_t N>
     BVH_ALWAYS_INLINE Vec<T, N> operator - (const Vec<T, N>& a, const Vec<T, N>& b) {
         return Vec<T, N>::generate([&](size_t i) { return a[i] - b[i]; });
     }
