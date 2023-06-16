@@ -3,7 +3,7 @@
 #include <string>
 #include "include/tinynurbs/tinynurbs.h"
 #include "simple_example.h"
-#include "MeshIntersect.h"
+#include "intersect/MeshIntersect.h"
 
 //
 // Created by simar on 6/12/2023.

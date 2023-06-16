@@ -3,14 +3,17 @@
 //
 
 #include "MeshIntersect.h"
-#include "mesh_calc/vec.h"
 #include <list>
 #include <array>
+#include "../clipper2/clipper.h"
+#include "../simple_example.h"
 
 void MeshIntersect::loadMesh(std::string filePath) {
     tris = load_obj<Scalar>(filePath);
 }
 
+//Ray intersect builder
+//TODO chage output to object for ease of usage
 int MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar, 3> ray) {
 
     bvh::v2::ThreadPool thread_pool;
@@ -76,7 +79,7 @@ int MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar, 3> ray) {
     }
 
 }
-//TODO not working right, possibly wrong output
+//TODO Deprecated , stored for historical purposes
 void MeshIntersect::planeIntersect2(float z) {
     Vec3 planePoint(0.0f, 0.0f, z);
     Vec3 normal(0.0f, 0.0f, 1.0f);
@@ -125,12 +128,14 @@ void MeshIntersect::planeIntersect2(float z) {
     }
 }
 
+//Very weird return tupe import from simple_eample.h for some reason it doesnot want to use the using statement from MeshIntersect.h, it works so I have left it that way
+//Probably a simple fix
 //This gives good values for plane intersect
-void MeshIntersect::planeIntersect(float z) {
+std::list<Vec3>  MeshIntersect::planeIntersect(float z, bool printOut) {
     Vec3 planePoint(0.0f, 0.0f, z);
     Vec3 normal(0.0f, 0.0f, 1.0f);
     Plane zPlane(planePoint, normal);
-   // print_triangles();
+    std::list<Vec3> intersectionPoints;
     for (std::size_t i = 0; i < tris.size(); i++) {
         Tri tri = tris[i];
         Vec3 edges[3] = {tri.p1 - tri.p0, tri.p2 - tri.p1, tri.p0 - tri.p2}; //edges of triangle
@@ -138,16 +143,21 @@ void MeshIntersect::planeIntersect(float z) {
         for (int j = 0; j < 3; j++){
             Vec3 direction = edges[j];
             Vec3 origin = points[j];
-            float denom = dot(normal, direction);
-            if (std::abs(denom) > 1e-6) { //check if line is not parallel to plane
-                float t = dot(planePoint - origin, normal) / denom;
+            float denom = dot(zPlane.normal, direction);
+            if (std::abs(denom) > 1e-6) { //check if line is not parallel to plane by comparing to eps value
+                float t = dot(zPlane.point - origin, zPlane.normal) / denom;
                 if (t >= 0 && t <= 1) { //check if intersection is on the line segment (edge)
                     Vec3 intersection = origin + direction * t;
-                    std::cout << "Point calculated at : " << intersection.values[0] << "," << intersection.values[1] <<"," << intersection.values[2] << " For triangle num " << i << std::endl;
+                    intersectionPoints.push_back(intersection);
+                    if (printOut) {
+                    std::cout << "Point calculated at : " << intersection.values[0] << "," << intersection.values[1]
+                              << "," << intersection.values[2] << " For triangle num " << i << std::endl;
+                    }
                 }
             }
         }
     }
+    return intersectionPoints;
 }
 
 void MeshIntersect::print_triangles() {
@@ -162,30 +172,45 @@ void MeshIntersect::print_triangles() {
                       << std::endl;
         }
     }
-}
 
-void MeshIntersect::getMinMax() {
+}
+//Might not be usefull as BVH class has robust min and max
+std::list<Vec3> MeshIntersect::getMinMax(bool printOutput = false) {
     // Initialize min and max variables
-    Vec3 minPoint(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-    Vec3 maxPoint(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
+    Vec3 minPoint(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
+                  std::numeric_limits<float>::max());
+    Vec3 maxPoint(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(),
+                  -std::numeric_limits<float>::max());
 
     // Iterate over triangles
     for (std::size_t i = 0; i < tris.size(); i++) {
-        Tri& tri = tris[i];
+        Tri &tri = tris[i];
 
         // Update min and max values
-        minPoint.values[0] = std::min(minPoint.values[0], std::min(tri.p0.values[0], std::min(tri.p1.values[0], tri.p2.values[0])));
-        minPoint.values[1] = std::min(minPoint.values[1], std::min(tri.p0.values[1], std::min(tri.p1.values[1], tri.p2.values[1])));
-        minPoint.values[2] = std::min(minPoint.values[2], std::min(tri.p0.values[2], std::min(tri.p1.values[2], tri.p2.values[2])));
+        minPoint.values[0] = std::min(minPoint.values[0],
+                                      std::min(tri.p0.values[0], std::min(tri.p1.values[0], tri.p2.values[0])));
+        minPoint.values[1] = std::min(minPoint.values[1],
+                                      std::min(tri.p0.values[1], std::min(tri.p1.values[1], tri.p2.values[1])));
+        minPoint.values[2] = std::min(minPoint.values[2],
+                                      std::min(tri.p0.values[2], std::min(tri.p1.values[2], tri.p2.values[2])));
 
-        maxPoint = Vec3(std::max(maxPoint.values[0], std::max(tri.p0.values[0], std::max(tri.p1.values[0], tri.p2.values[0]))),
-                        std::max(maxPoint.values[1], std::max(tri.p0.values[1], std::max(tri.p1.values[1], tri.p2.values[1]))),
-                        std::max(maxPoint.values[2], std::max(tri.p0.values[2], std::max(tri.p1.values[2], tri.p2.values[2]))));
+        maxPoint = Vec3(
+                std::max(maxPoint.values[0], std::max(tri.p0.values[0], std::max(tri.p1.values[0], tri.p2.values[0]))),
+                std::max(maxPoint.values[1], std::max(tri.p0.values[1], std::max(tri.p1.values[1], tri.p2.values[1]))),
+                std::max(maxPoint.values[2], std::max(tri.p0.values[2], std::max(tri.p1.values[2], tri.p2.values[2]))));
     }
 
-    // Print or use the calculated min and max values
-    std::cout << "Min Point: " << minPoint.values[0] << ", " << minPoint.values[1] << ", " << minPoint.values[2] << std::endl;
-    std::cout << "Max Point: " << maxPoint.values[0] << ", " << maxPoint.values[1] << ", " << maxPoint.values[2] << std::endl;
+    std::list<Vec3> minMaxPoints;
+    minMaxPoints.push_back(minPoint);
+    minMaxPoints.push_back(maxPoint);
+
+    if (printOutput) {
+    std::cout << "Min Point: " << minPoint.values[0] << ", " << minPoint.values[1] << ", " << minPoint.values[2]
+              << std::endl;
+    std::cout << "Max Point: " << maxPoint.values[0] << ", " << maxPoint.values[1] << ", " << maxPoint.values[2]
+              << std::endl;
+    }
+    return minMaxPoints;
 }
 
 

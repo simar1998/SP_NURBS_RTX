@@ -5,18 +5,19 @@
 #ifndef TINYNURBS_MESHINTERSECT_H
 #define TINYNURBS_MESHINTERSECT_H
 
-#include "mesh_calc/bvh.h"
-#include "mesh_calc/vec.h"
-#include "mesh_calc/ray.h"
-#include "mesh_calc/node.h"
-#include "mesh_calc/default_builder.h"
-#include "mesh_calc/thread_pool.h"
-#include "mesh_calc/executor.h"
-#include "mesh_calc/stack.h"
-#include "mesh_calc/tri.h"
-#include "mesh_calc/load_obj.h"
+#include "../mesh_calc/bvh.h"
+#include "../mesh_calc/vec.h"
+#include "../mesh_calc/ray.h"
+#include "../mesh_calc/node.h"
+#include "../mesh_calc/default_builder.h"
+#include "../mesh_calc/thread_pool.h"
+#include "../mesh_calc/executor.h"
+#include "../mesh_calc/stack.h"
+#include "../mesh_calc/tri.h"
+#include "../mesh_calc/load_obj.h"
 
 #include <iostream>
+#include <list>
 
 
 class MeshIntersect {
@@ -37,9 +38,9 @@ public:
     int perform_intersect(bvh::v2::Ray<Scalar, 3> ray);
     void print_triangles();
 
-    void planeIntersect(float z);
+    std::list<Vec3> planeIntersect(float z, bool printOut = false);
 
-    void getMinMax();
+    std::list<Vec3>  getMinMax(bool printOutput);
 
     void planeIntersect2(float z);
 };
