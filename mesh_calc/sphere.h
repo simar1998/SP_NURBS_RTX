@@ -1,8 +1,8 @@
 #ifndef BVH_V2_SPHERE_H
 #define BVH_V2_SPHERE_H
 
-#include "../../SculptPlane/vec.h"
 #include "ray.h"
+#include "bbox.h"
 
 #include <limits>
 #include <utility>

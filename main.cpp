@@ -4,7 +4,7 @@
 #include "include/tinynurbs/tinynurbs.h"
 #include "simple_example.h"
 #include "intersect/MeshIntersect.h"
-
+#include "nurbs/tests/catch.hpp"
 //
 // Created by simar on 6/12/2023.
 //
@@ -36,15 +36,19 @@ void printTriangles(const std::string filePath) {
 
 
 void testNurbs(){
-    tinynurbs::Curve<float> crv; // Planar curve using float32
-    crv.control_points = {glm::vec3(-1, 0, 0), // std::vector of 3D points
-                          glm::vec3(0, 1, 0),
-                          glm::vec3(1, 0, 0)
+    tinynurbs::Surface3f srf;
+    srf.degree_u = 1;
+    srf.degree_v = 1;
+    srf.knots_u = {0, 0, 1, 1};
+    srf.knots_v = {0, 0, 1, 1};
+    // 2x2 grid (tinynurbs::array2) of control points
+    srf.control_points = {2, 2,
+                          {glm::vec3(-1, 0, 1), glm::vec3(-1, 0, -1),
+                           glm::vec3(1, 0, 1), glm::vec3(1, 0, -1)
+                          }
     };
-    crv.knots = {0, 0, 0, 1, 1, 1}; // std::vector of floats
-    crv.degree = 2;
+    tinynurbs::surfaceSaveOBJ(R"(C:\Code\SculptPlane\surface.obj)", srf);
 }
-
 
 
 int main() {
@@ -55,6 +59,7 @@ int main() {
     //testMesh(filePath);
     MeshIntersect meshIntersect;
     meshIntersect.loadMesh(filePath);
+    //NURBSObj();
     //meshIntersect.print_triangles();
     meshIntersect.getMinMax(true);
     meshIntersect.planeIntersect(1.5f);
