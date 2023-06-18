@@ -69,7 +69,7 @@ int main() {
             0.,               // Minimum intersection distance
             50              // Maximum intersection distance
     };
-    //meshIntersect.perform_intersect(ray);
+    meshIntersect.perform_intersect(ray);
 
     ray = Ray {
             Vec3(0., 2,0.3), // Ray origin
@@ -77,7 +77,15 @@ int main() {
             0.,               // Minimum intersection distance
             50              // Maximum intersection distance
     };
-    //meshIntersect.perform_intersect(ray);
+    meshIntersect.perform_intersect(ray);
+
+    ray = Ray {
+            Vec3(0., 2,0.3), // Ray origin
+            Vec3(0., 1., 0.), // Ray direction
+            0.,               // Minimum intersection distance
+            50              // Maximum intersection distance
+    };
+    meshIntersect.perform_intersect(ray);
 
 
 }
