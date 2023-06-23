@@ -47,7 +47,9 @@ void testNurbs(){
                            glm::vec3(1, 0, 1), glm::vec3(1, 0, -1)
                           }
     };
-    tinynurbs::surfaceSaveOBJ(R"(C:\Code\SculptPlane\surface.obj)", srf);
+
+    std::cout<< "Output" << std::to_string(surfaceNormal(srf,0.1f,0.1f)[0])<<std::endl;
+   //tinynurbs::surfaceSaveOBJ(R"(C:\Code\SculptPlane\surface.obj)", srf);
 }
 
 
@@ -62,7 +64,7 @@ int main() {
     //NURBSObj();
     //meshIntersect.print_triangles();
     meshIntersect.getMinMax(true);
-    meshIntersect.planeIntersect(1.5f);
+    meshIntersect.planeIntersect(1.5f, true);
     auto ray = Ray {
             Vec3(0., 0.,0.3), // Ray origin
             Vec3(0., 0., 1.), // Ray direction

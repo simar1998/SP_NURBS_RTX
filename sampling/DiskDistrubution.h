@@ -2,8 +2,8 @@
 // Created by simar on 6/16/2023.
 //
 
-#ifndef TINYNURBS_DISKDISTRUBUTION_H
-#define TINYNURBS_DISKDISTRUBUTION_H
+#ifndef SCUPTPATH_DISKDISTRUBUTION_H
+#define SCUPTPATH_DISKDISTRUBUTION_H
 #include "../mesh_calc/bvh.h"
 #include "../mesh_calc/tri.h"
 
@@ -15,4 +15,4 @@ public:
 };
 
 
-#endif //TINYNURBS_DISKDISTRUBUTION_H
+#endif //SCUPTPATH_DISKDISTRUBUTION_H

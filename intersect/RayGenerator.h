@@ -34,21 +34,35 @@ struct IntersectPoints{
 };
 struct linearConfig{
     std::vector<Vec3> interpolationPoints;//Last point must be current point
-    std::vector<int>  point_w;//The weight of the points asosicated with the linear vector
+    std::vector<int>  point_w;//The weight of the points associated with the linear vector |{UNUSED}|
+};
+struct frontFloodConfig{
+    Vec3 frontVec;
+    int floodPoints = 4; //Basic value 4 to create floodlight effect, pls do not change from 4 untested
+    float vecAngles;//in degrees
+};
+
+struct biDirectionalConfig{
+    frontFloodConfig frontFloodConfig;
+    int perpLines = 4; //Bust be min 4 and multiples
 };
 class RayGenerator {
 
     using Scalar = float;
     using Vec3 = bvh::v2::Vec<Scalar, 3>;
     using Ray = bvh::v2::Ray<Scalar, 3>;
-    using Tri = bvh::v2::Tri<Scalar, 3>;
 
 public:
-    RayGenerator(const RayIntersectConfig& config, std::vector<Tri>& tris){
+    RayGenerator(const RayIntersectConfig& config){
 
     }
 
-    Vec3 linearRay(const RayIntersectConfig &config, std::vector<Tri> &tris, linearConfig& linearConfig);
+    const Vec3 UP_VEC = Vec3(0,0,1);//Constant Upwards pointing vector
+    const Vec3 DOWN_VEC = Vec3(0,0,-1);//Constant downwards pointing vector
+
+    Vec3 linearRay(linearConfig &linearConfig);
+    std::vector<Vec3> frontFlood(frontFloodConfig &frontFloodConfig);
+    std::vector<Vec3> biDirectional(biDirectionalConfig &biDirectionalConfig);
 };
 
 
