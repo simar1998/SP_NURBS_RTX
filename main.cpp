@@ -55,7 +55,8 @@ void testNurbs(){
 
 int main() {
     std::cout << "Welcome to Sculpt Path" << std::endl;
-    std::string filePath = R"(C:\Code\SculptPlane\test_mp_2.obj)";
+    std::string filePath = R"(C:\code\SP_NURBS_RTX\test_mp_2.obj)";
+    std::cout<<"Loading file : "<<filePath <<std::endl;
     testNurbs();
     //printTriangles(filePath);
     //testMesh(filePath);
@@ -69,7 +70,7 @@ int main() {
             Vec3(0., 0.,0.3), // Ray origin
             Vec3(0., 0., 1.), // Ray direction
             0.,               // Minimum intersection distance
-            50              // Maximum intersection distance
+            50              // Maytxfximum intersection distance
     };
     meshIntersect.perform_intersect(ray);
 

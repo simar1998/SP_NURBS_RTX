@@ -3,10 +3,17 @@ project(SculptPlane)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(SculptPlane main.cpp stl_header.h mesh_calc/bvh.h mesh_calc/binned_sah_builder.h mesh_calc/bbox.h mesh_calc/default_builder.h mesh_calc/executor.h mesh_calc/load_obj.cpp mesh_calc/load_obj.h mesh_calc/mini_tree_builder.h mesh_calc/node.h mesh_calc/platform.h mesh_calc/ray.h mesh_calc/reinsertion_optimizer.h mesh_calc/resource.h mesh_calc/sphere.h mesh_calc/split_heuristic.h mesh_calc/stack.h mesh_calc/stream.h mesh_calc/sweep_sah_builder.h mesh_calc/thread_pool.h mesh_calc/top_down_sah_builder.h mesh_calc/tri.h mesh_calc/utils.h mesh_calc/vec.h simple_example.cpp simple_example.h intersect/MeshIntersect.cpp intersect/MeshIntersect.h gcode/InputProcessing.cpp gcode/InputProcessing.h gcode/Gcode.cpp gcode/Gcode.h gcode/gcodedef/Temp.h gcode/gcodedef/MovementMode.h gcode/gcodedef/Fan.h gcode/gcodedef/Extrusion.h gcode/gcodedef/Tool.h gcode/gcodedef/GcodeDefinitions.h sampling/DiskDistrubution.cpp sampling/DiskDistrubution.h sampling/poisson_disk_sampling.h intersect/RayGenerator.cpp intersect/RayGenerator.h interpolation/Interpolation.cpp interpolation/Interpolation.h)
+set(HEADER_DIR "Eigen")
+
+# Use file(GLOB ...) to add all header files to a variable
+file(GLOB HEADER_FILES "${HEADER_DIR}/*.h")
+
+add_executable(SculptPlane main.cpp stl_header.h mesh_calc/bvh.h mesh_calc/binned_sah_builder.h mesh_calc/bbox.h mesh_calc/default_builder.h mesh_calc/executor.h mesh_calc/load_obj.cpp mesh_calc/load_obj.h mesh_calc/mini_tree_builder.h mesh_calc/node.h mesh_calc/platform.h mesh_calc/ray.h mesh_calc/reinsertion_optimizer.h mesh_calc/resource.h mesh_calc/sphere.h mesh_calc/split_heuristic.h mesh_calc/stack.h mesh_calc/stream.h mesh_calc/sweep_sah_builder.h mesh_calc/thread_pool.h mesh_calc/top_down_sah_builder.h mesh_calc/tri.h mesh_calc/utils.h mesh_calc/vec.h simple_example.cpp simple_example.h intersect/MeshIntersect.cpp intersect/MeshIntersect.h gcode/InputProcessing.cpp gcode/InputProcessing.h gcode/Gcode.cpp gcode/Gcode.h gcode/gcodedef/Temp.h gcode/gcodedef/MovementMode.h gcode/gcodedef/Fan.h gcode/gcodedef/Extrusion.h gcode/gcodedef/Tool.h gcode/gcodedef/GcodeDefinitions.h sampling/DiskDistrubution.cpp sampling/DiskDistrubution.h sampling/poisson_disk_sampling.h intersect/RayGenerator.cpp intersect/RayGenerator.h curvefitting/CurveFitting.cpp curvefitting/CurveFitting.h ${HEADER_FILES})
 
 cmake_minimum_required(VERSION 3.5)
 project(tinynurbs LANGUAGES CXX)
+
+
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
