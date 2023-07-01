@@ -15,6 +15,8 @@ using Vec3 = bvh::v2::Vec<Scalar, 3>;
 using curv = tinynurbs::Curve<float>;
 using GlmVec = glm::vec3;
 
+private:
+    float computeBasisFunction(int degree, const std::vector<float>& knotVector, int knotIndex, float parameter);
 public:
     curv fitCurve(std::vector<Vec3> &points);
 };
