@@ -38,7 +38,7 @@ public:
     int perform_intersect(bvh::v2::Ray<Scalar, 3> ray);
     void print_triangles();
 
-    std::list<Vec3> planeIntersect(float z, bool printOut = false);
+    std::vector<Vec3> planeIntersect(float z, bool printOut = false);
 
     std::list<Vec3>  getMinMax(bool printOutput = false);
 

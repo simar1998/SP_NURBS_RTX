@@ -131,11 +131,11 @@ void MeshIntersect::planeIntersect2(float z) {
 //Very weird return tupe import from simple_eample.h for some reason it doesnot want to use the using statement from MeshIntersect.h, it works so I have left it that way
 //Probably a simple fix
 //This gives good values for plane intersect
-std::list<Vec3>  MeshIntersect::planeIntersect(float z, bool printOut) {
+std::vector<Vec3>  MeshIntersect::planeIntersect(float z, bool printOut) {
     Vec3 planePoint(0.0f, 0.0f, z);
     Vec3 normal(0.0f, 0.0f, 1.0f);
     Plane zPlane(planePoint, normal);
-    std::list<Vec3> intersectionPoints;
+    std::vector<Vec3> intersectionPoints;
     for (std::size_t i = 0; i < tris.size(); i++) {
         Tri tri = tris[i];
         Vec3 edges[3] = {tri.p1 - tri.p0, tri.p2 - tri.p1, tri.p0 - tri.p2}; //edges of triangle

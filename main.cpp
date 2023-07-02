@@ -4,6 +4,7 @@
 #include "include/tinynurbs/tinynurbs.h"
 #include "simple_example.h"
 #include "intersect/MeshIntersect.h"
+#include "curvefitting/CurveFitting.h"
 #include "nurbs/tests/catch.hpp"
 //
 // Created by simar on 6/12/2023.
@@ -65,7 +66,22 @@ int main() {
     //NURBSObj();
     //meshIntersect.print_triangles();
     meshIntersect.getMinMax(true);
-    meshIntersect.planeIntersect(1.5f, true);
+    std::vector<Vec3> intPoints = meshIntersect.planeIntersect(1.5f, true);
+    CurveFitting curveFitting;
+    tinynurbs::Curve<float> curv =  curveFitting.fitCurve(intPoints);
+    for (int i = 0; i < curv.control_points.size(); ++i) {
+        std::cout << "Control point number : " << std::to_string(i)<< std::endl;
+        std::cout << std::to_string(curv.control_points[i][0]) << std::endl;
+        std::cout << std::to_string(curv.control_points[i][1]) << std::endl;
+        std::cout << std::to_string(curv.control_points[i][2]) << std::endl;
+    }
+    std::cout << "Constructed curve knots : " << std::to_string(curv.knots.size()) << std::endl;
+    for (int i = 0; i < curv.knots.size(); ++i) {
+        std::cout << "Knot number : " << std::to_string(i)<< std::endl;
+        std::cout << "Knot value : " <<std::to_string(curv.knots[i]) << std::endl;
+    }
+
+
     auto ray = Ray {
             Vec3(0., 0.,0.3), // Ray origin
             Vec3(0., 0., 1.), // Ray direction
