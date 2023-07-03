@@ -3,3 +3,8 @@
 //
 
 #include "PointIteration.h"
+
+std::vector<Vec3> PointIteration::initPointIteration() {
+
+    return std::vector<Vec3>();
+}

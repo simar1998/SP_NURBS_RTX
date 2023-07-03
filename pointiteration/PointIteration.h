@@ -18,11 +18,11 @@ class PointIteration {
     using Bvh = bvh::v2::Bvh<Node>;
     using Ray = bvh::v2::Ray<Scalar, 3>;
     std::vector<Tri> tris;
-    using
+
 
 public:
-
     std::vector<Vec3> initPointIteration();
+    Vec3 getInitPoint();
 };
 
 

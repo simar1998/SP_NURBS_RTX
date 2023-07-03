@@ -56,7 +56,7 @@ void testNurbs(){
 
 int main() {
     std::cout << "Welcome to Sculpt Path" << std::endl;
-    std::string filePath = R"(C:\Code\SculptPlane\test_mp_2.obj)";
+    std::string filePath = R"(C:\code\SP_NURBS_RTX\test_mp_2.obj)";
     std::cout<<"Loading file : "<<filePath <<std::endl;
     testNurbs();
     //printTriangles(filePath);
