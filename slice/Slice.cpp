@@ -30,9 +30,9 @@ void Slice::beginSlice(std::string filePath, Printer printer) {
     Interpolation interpolation;
     std::vector<Vec3> interpolatedPoints = interpolation.createInterpolatedPoints(intPoints);
 
-//    for (int i = 0; i < interpolatedPoints.size(); ++i) {
-//        std::cout << "X : " << std::to_string(interpolatedPoints[i][0]) << "Y : " << std::to_string(interpolatedPoints[i][1]) << std::endl;
-//    }
+    for (int i = 0; i < interpolatedPoints.size(); ++i) {
+        std::cout << "X : " << std::to_string(interpolatedPoints[i][0]) << "Y : " << std::to_string(interpolatedPoints[i][1]) << std::endl;
+    }
 
 
 

@@ -213,5 +213,41 @@ std::vector<Vec3> MeshIntersect::getMinMax(bool printOutput) {
     return minMaxPoints;
 }
 
+/**
+ * Checks whether of not a given point is within the mesh by performing computationaly simple
+ * min max point test and then furhturmore performs ray intersection tests on the mesh
+ * to check if the point is wihtin the mesh for meshes that might resemble a donut for instance
+ * @param point
+ * @return
+ */
+bool MeshIntersect::isPointInMesh(Vec3 point) {
+
+    //Checks using basic minmax metrics whether or not the point is wihtin the bounds of the mesh
+    //Rules out the need for additional computation
+    std::vector<Vec3> minMax = getMinMax(false);
+    if (!(point.values[0] >  minMax[0].values[0] && point.values[0] <  minMax[1].values[0])){
+        return false;
+    }
+    if (!(point.values[1] >  minMax[0].values[1] && point.values[1] <  minMax[1].values[1])){
+        return false;
+    }
+    if (!(point.values[2] >  minMax[0].values[2] && point.values[2] <  minMax[1].values[2])){
+        return false;
+    }
+    float meshHeight = minMax[1].values[2] - minMax[0].values[2];
+    //More robust way of checking if the point is within the mesh
+        auto ray = Ray {
+            point,// Ray origin same as param
+            Vec3(0., 0., 1.), // Ray direction pointing up, easy way to check ray intersect
+            0.,               // Minimum intersection distance
+            meshHeight + 100.0f             // Max rtx fximum intersection distance based on meshheight and arbitary large float amount
+    };
+    int isIntersect = perform_intersect(ray);
+    if (isIntersect != 1){
+        return true;
+    }
+    return false;
+}
+
 
 

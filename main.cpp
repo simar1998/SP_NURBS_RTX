@@ -56,6 +56,7 @@ void testNurbs(){
 }
 
 int main(){
+
     Printer printer;
     printer.setXSize(350);
     printer.setYSize(350);
@@ -70,9 +71,7 @@ int main(){
 
     Slice slice;
     slice.beginSlice(R"(C:\Code\SculptPlane\test_mp_2.obj)", printer);
-}
 
-//int main() {
 //    std::cout << "Welcome to Sculpt Path" << std::endl;
 //    std::string filePath = R"(C:\Code\SculptPlane\test_mp_2.obj)";
 //    std::cout<<"Loading file : "<<filePath <<std::endl;
@@ -123,9 +122,9 @@ int main(){
 //            50              // Maximum intersection distance
 //    };
 //    meshIntersect.perform_intersect(ray);
-//
-//
-//}
+}
+
+
 
 
 

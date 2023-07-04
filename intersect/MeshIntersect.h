@@ -43,6 +43,8 @@ public:
     std::vector<Vec3>  getMinMax(bool printOutput = false);
 
     void planeIntersect2(float z);
+
+    bool isPointInMesh(Vec3 point);
 };
 
 
