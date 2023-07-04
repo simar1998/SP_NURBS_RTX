@@ -18,7 +18,7 @@ using GlmVec = glm::vec3;
 private:
     float computeBasisFunction(int degree, const std::vector<float>& knotVector, int knotIndex, float parameter);
 public:
-    curv fitCurve(std::vector<Vec3> &points);
+    curv fitCurve(const std::vector<Vec3> &points);
 };
 
 

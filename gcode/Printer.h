@@ -10,8 +10,7 @@
 class Printer {
 public:
     // Constructor
-    Printer(double xSize, double ySize, double zSize, double maxLayerHeight, double minLayerHeight,
-            double maxLayerWidth, double minLayerWidth, double nozzleSize, double filamentTemp, double bedTemp);
+    Printer();
 
     // Getter methods
     double getXSize() const;
@@ -24,6 +23,18 @@ public:
     double getNozzleSize() const;
     double getFilamentTemp() const;
     double getBedTemp() const;
+
+    // Setter methods
+    void setXSize(double xSize);
+    void setYSize(double ySize);
+    void setZSize(double zSize);
+    void setMaxLayerHeight(double maxLayerHeight);
+    void setMinLayerHeight(double minLayerHeight);
+    void setMaxLayerWidth(double maxLayerWidth);
+    void setMinLayerWidth(double minLayerWidth);
+    void setNozzleSize(double nozzleSize);
+    void setFilamentTemp(double filamentTemp);
+    void setBedTemp(double bedTemp);
 
 private:
     // Printer dimensions

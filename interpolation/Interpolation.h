@@ -17,6 +17,15 @@ class Interpolation {
 public:
     std::vector<Vec3> createInterpolatedPoints(std::vector<Vec3> points);
 
+private:
+    // Calculate the Euclidean distance between two points
+    float calculateDistance(Vec3 point1, Vec3 point2) {
+        float dx = point2.values[0] - point1.values[0];
+        float dy = point2.values[1] - point1.values[1];
+        float dz = point2.values[2] - point1.values[2];
+        return std::sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
 };
 
 

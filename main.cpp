@@ -6,6 +6,8 @@
 #include "intersect/MeshIntersect.h"
 #include "curvefitting/CurveFitting.h"
 #include "nurbs/tests/catch.hpp"
+#include "gcode/Printer.h"
+#include "slice/Slice.h"
 //
 // Created by simar on 6/12/2023.
 //
@@ -53,61 +55,77 @@ void testNurbs(){
    //tinynurbs::surfaceSaveOBJ(R"(C:\Code\SculptPlane\surface.obj)", srf);
 }
 
+int main(){
+    Printer printer;
+    printer.setXSize(350);
+    printer.setYSize(350);
+    printer.setZSize(350);
+    printer.setNozzleSize(0.4);
+    printer.setMaxLayerHeight(0.2);
+    printer.setMinLayerHeight(0.1);
+    printer.setFilamentTemp(200);
+    printer.setBedTemp(60);
+    printer.setMinLayerWidth(0.4);
+    printer.setMaxLayerWidth(0.45);
 
-int main() {
-    std::cout << "Welcome to Sculpt Path" << std::endl;
-    std::string filePath = R"(C:\code\SP_NURBS_RTX\test_mp_2.obj)";
-    std::cout<<"Loading file : "<<filePath <<std::endl;
-    testNurbs();
-    //printTriangles(filePath);
-    //testMesh(filePath);
-    MeshIntersect meshIntersect;
-    meshIntersect.loadMesh(filePath);
-    //NURBSObj();
-    //meshIntersect.print_triangles();
-    meshIntersect.getMinMax(true);
-    std::vector<Vec3> intPoints = meshIntersect.planeIntersect(1.5f, true);
-    CurveFitting curveFitting;
-    tinynurbs::Curve<float> curv =  curveFitting.fitCurve(intPoints);
-    for (int i = 0; i < curv.control_points.size(); ++i) {
-        std::cout << "Control point number : " << std::to_string(i)<< std::endl;
-        std::cout << std::to_string(curv.control_points[i][0]) << std::endl;
-        std::cout << std::to_string(curv.control_points[i][1]) << std::endl;
-        std::cout << std::to_string(curv.control_points[i][2]) << std::endl;
-    }
-    std::cout << "Constructed curve knots : " << std::to_string(curv.knots.size()) << std::endl;
-    for (int i = 0; i < curv.knots.size(); ++i) {
-        std::cout << "Knot number : " << std::to_string(i)<< std::endl;
-        std::cout << "Knot value : " <<std::to_string(curv.knots[i]) << std::endl;
-    }
-
-
-    auto ray = Ray {
-            Vec3(0., 0.,0.3), // Ray origin
-            Vec3(0., 0., 1.), // Ray direction
-            0.,               // Minimum intersection distance
-            50              // Maytxfximum intersection distance
-    };
-    meshIntersect.perform_intersect(ray);
-
-    ray = Ray {
-            Vec3(0., 2,0.3), // Ray origin
-            Vec3(0., 0., 1.), // Ray direction
-            0.,               // Minimum intersection distance
-            50              // Maximum intersection distance
-    };
-    meshIntersect.perform_intersect(ray);
-
-    ray = Ray {
-            Vec3(0., 2,0.3), // Ray origin
-            Vec3(0., 1., 0.), // Ray direction
-            0.,               // Minimum intersection distance
-            50              // Maximum intersection distance
-    };
-    meshIntersect.perform_intersect(ray);
-
-
+    Slice slice;
+    slice.beginSlice(R"(C:\Code\SculptPlane\test_mp_2.obj)", printer);
 }
+
+//int main() {
+//    std::cout << "Welcome to Sculpt Path" << std::endl;
+//    std::string filePath = R"(C:\Code\SculptPlane\test_mp_2.obj)";
+//    std::cout<<"Loading file : "<<filePath <<std::endl;
+//    testNurbs();
+//    //printTriangles(filePath);
+//    //testMesh(filePath);
+//    MeshIntersect meshIntersect;
+//    meshIntersect.loadMesh(filePath);
+//    //NURBSObj();
+//    //meshIntersect.print_triangles();
+//    meshIntersect.getMinMax(true);
+//    std::vector<Vec3> intPoints = meshIntersect.planeIntersect(1.5f, true);
+//    CurveFitting curveFitting;
+//    tinynurbs::Curve<float> curv =  curveFitting.fitCurve(intPoints);
+//    for (int i = 0; i < curv.control_points.size(); ++i) {
+//        std::cout << "Control point number : " << std::to_string(i)<< std::endl;
+//        std::cout << std::to_string(curv.control_points[i][0]) << std::endl;
+//        std::cout << std::to_string(curv.control_points[i][1]) << std::endl;
+//        std::cout << std::to_string(curv.control_points[i][2]) << std::endl;
+//    }
+//    std::cout << "Constructed curve knots : " << std::to_string(curv.knots.size()) << std::endl;
+//    for (int i = 0; i < curv.knots.size(); ++i) {
+//        std::cout << "Knot number : " << std::to_string(i)<< std::endl;
+//        std::cout << "Knot value : " <<std::to_string(curv.knots[i]) << std::endl;
+//    }
+//
+//
+//    auto ray = Ray {
+//            Vec3(0., 0.,0.3), // Ray origin
+//            Vec3(0., 0., 1.), // Ray direction
+//            0.,               // Minimum intersection distance
+//            50              // Maytxfximum intersection distance
+//    };
+//    meshIntersect.perform_intersect(ray);
+//
+//    ray = Ray {
+//            Vec3(0., 2,0.3), // Ray origin
+//            Vec3(0., 0., 1.), // Ray direction
+//            0.,               // Minimum intersection distance
+//            50              // Maximum intersection distance
+//    };
+//    meshIntersect.perform_intersect(ray);
+//
+//    ray = Ray {
+//            Vec3(0., 2,0.3), // Ray origin
+//            Vec3(0., 1., 0.), // Ray direction
+//            0.,               // Minimum intersection distance
+//            50              // Maximum intersection distance
+//    };
+//    meshIntersect.perform_intersect(ray);
+//
+//
+//}
 
 
 

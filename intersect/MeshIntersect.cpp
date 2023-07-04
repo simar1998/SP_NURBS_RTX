@@ -175,7 +175,7 @@ void MeshIntersect::print_triangles() {
 
 }
 //Might not be usefull as BVH class has robust min and max
-std::list<Vec3> MeshIntersect::getMinMax(bool printOutput) {
+std::vector<Vec3> MeshIntersect::getMinMax(bool printOutput) {
     // Initialize min and max variables
     Vec3 minPoint(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
                   std::numeric_limits<float>::max());
@@ -200,7 +200,7 @@ std::list<Vec3> MeshIntersect::getMinMax(bool printOutput) {
                 std::max(maxPoint.values[2], std::max(tri.p0.values[2], std::max(tri.p1.values[2], tri.p2.values[2]))));
     }
 
-    std::list<Vec3> minMaxPoints;
+    std::vector<Vec3> minMaxPoints;
     minMaxPoints.push_back(minPoint);
     minMaxPoints.push_back(maxPoint);
 

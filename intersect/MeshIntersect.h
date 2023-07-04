@@ -40,7 +40,7 @@ public:
 
     std::vector<Vec3> planeIntersect(float z, bool printOut = false);
 
-    std::list<Vec3>  getMinMax(bool printOutput = false);
+    std::vector<Vec3>  getMinMax(bool printOutput = false);
 
     void planeIntersect2(float z);
 };
