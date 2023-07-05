@@ -249,5 +249,27 @@ bool MeshIntersect::isPointInMesh(Vec3 point) {
     return false;
 }
 
+//bool MeshIntersect::isPointInMesh(Vec3 point) {
+//    int numIntersections = 0;
+//    for (const auto& triangle : tris) {
+//        bool intersects = false;
+//        for (int i = 0; i < 3; i++) {
+//            const Vec3& v0 = triangle.p0[i];
+//            const Vec3& v1 = triangle.p1[(i + 1) % 3];
+//            if ((v0.values[1] <= point.values[1] && v1.values[1] > point.values[1]) ||
+//                (v1.values[1] <= point.values[1] && v0.values[1] > point.values[1])) {
+//                float intersectX = (v0.values[0] + (point.values[1] - v0.values[1]) / (v1.values[1] - v0.values[1]) * (v1.values[0] - v0.values[0]));
+//                if (point.values[0] < intersectX) {
+//                    intersects = !intersects;
+//                }
+//            }
+//        }
+//        if (intersects) {
+//            numIntersections++;
+//        }
+//    }
+//    return (numIntersections % 2 == 1);
+//}
+
 
 

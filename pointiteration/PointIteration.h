@@ -21,8 +21,10 @@ class PointIteration {
 
 
 public:
-    std::vector<Vec3> initPointIteration();
+
     Vec3 getInitPoint();
+
+    std::vector<Vec3> initPointIteration(std::string filePath);
 };
 
 
