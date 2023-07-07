@@ -5,10 +5,11 @@
 #include "PointIteration.h"
 #include "../intersect/MeshIntersect.h"
 #include <random>
+#include <cmath>
 
 //Load mesh from mesh intersect and randomly check plane intersect values and perform ray intersect values
 //Infer sampling points from the plane intersect in order to perform ray intersect tests on the given mesh
-std::vector<Vec3> PointIteration::initPointIteration(std::string filePath) {
+std::vector<Vec3> PointIteration::initPointIteration(std::string filePath, Printer printer) {
     MeshIntersect intersect;
     intersect.loadMesh(filePath);
     std::vector<Vec3> minMax = intersect.getMinMax(false);
@@ -46,8 +47,11 @@ std::vector<Vec3> PointIteration::initPointIteration(std::string filePath) {
             verifiedValues.push_back(preSortedValue);
         }
     }
+    //create upward biased pull logic that creates a sphere function to generate point values within the sphere wihtin the scope of the printer slice values
 
-    //Begin dimensional point iteration with sphere bias towards
+
+    //Based on the point iteration one can create a nurbs surface to be used for future offsetting logic and ensure points are within the mesh or indluded within
+
 
 
 
@@ -58,3 +62,20 @@ std::vector<Vec3> PointIteration::initPointIteration(std::string filePath) {
 
     return std::vector<Vec3>();
 }
+
+bool PointIteration::isPointInSphere(Vec3 centre, float r, Vec3 testPoint) {
+    if (eucDistance(centre,testPoint) < r){
+
+        return true;
+    }
+    return false;
+}
+
+float PointIteration::eucDistance(Vec3 p1, Vec3 p2) {
+    auto dist = sqrtf(
+                    (p2.values[0] - p1.values[1])*(p2.values[0] - p1.values[1]) +
+                    (p2.values[1] - p1.values[1])*(p2.values[1] - p1.values[1]) +
+                    (p2.values[2] - p1.values[2])*(p2.values[2] - p1.values[2]));
+    return dist;
+}
+

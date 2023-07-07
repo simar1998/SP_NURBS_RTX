@@ -9,6 +9,7 @@
 #include "../mesh_calc/vec.h"
 #include "../mesh_calc/tri.h"
 #include "../simple_example.h"
+#include "../gcode/Printer.h"
 
 class PointIteration {
 
@@ -19,12 +20,12 @@ class PointIteration {
     using Ray = bvh::v2::Ray<Scalar, 3>;
     std::vector<Tri> tris;
 
-
 public:
-
     Vec3 getInitPoint();
-
-    std::vector<Vec3> initPointIteration(std::string filePath);
+    std::vector<Vec3> initPointIteration(std::string filePath, Printer printer);
+private:
+    float eucDistance(Vec3 p1, Vec3 p2);
+    bool isPointInSphere(Vec3 centre, float r, Vec3 testPoint);
 };
 
 
