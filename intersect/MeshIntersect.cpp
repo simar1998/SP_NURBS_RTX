@@ -7,7 +7,7 @@
 #include <array>
 #include "../clipper2/clipper.h"
 #include "../simple_example.h"
-
+#include "../interpolation/Interpolation.h"
 void MeshIntersect::loadMesh(std::string filePath) {
     tris = load_obj<Scalar>(filePath);
 }
@@ -249,27 +249,45 @@ bool MeshIntersect::isPointInMesh(Vec3 point) {
     return false;
 }
 
-//bool MeshIntersect::isPointInMesh(Vec3 point) {
-//    int numIntersections = 0;
-//    for (const auto& triangle : tris) {
-//        bool intersects = false;
-//        for (int i = 0; i < 3; i++) {
-//            const Vec3& v0 = triangle.p0[i];
-//            const Vec3& v1 = triangle.p1[(i + 1) % 3];
-//            if ((v0.values[1] <= point.values[1] && v1.values[1] > point.values[1]) ||
-//                (v1.values[1] <= point.values[1] && v0.values[1] > point.values[1])) {
-//                float intersectX = (v0.values[0] + (point.values[1] - v0.values[1]) / (v1.values[1] - v0.values[1]) * (v1.values[0] - v0.values[0]));
-//                if (point.values[0] < intersectX) {
-//                    intersects = !intersects;
-//                }
-//            }
-//        }
-//        if (intersects) {
-//            numIntersections++;
-//        }
-//    }
-//    return (numIntersections % 2 == 1);
-//}
+
+/**
+ * Creates a overcast matrix field from which the a series of Ray intersect tests are performed
+ * - Must have an height differential and must compute min max and plane from which the ray matrix is generated must be above the file
+ * - Currently has sinmple linear system based interpolation technique to determine the distance in which the ray cast occours
+ */
+std::vector<std::vector<Vec3>> MeshIntersect::generateOvercastRayField() {
+
+    std::vector<Vec3> minMax = getMinMax();//MinMax values 1st index min and 2nd is max
+
+    float zOffsetVal = 10;//Positive offset for z axis
 
 
+
+    //FIXME, figure out linpot n value which will be used for populating matrix and determine the grid size
+
+    int nVal;//FIXME value not provided, will not work with calcs done
+
+    std::vector<std::vector<Vec3>> grid(nVal, std::vector<Vec3>(nVal));
+
+    // Assign values to the elements of the grid
+    //FIXME add linpot method to assertain origin location to poplutate grid
+    for (int i = 0; i < grid.size(); i++) {
+        for (int j = 0; j < grid[i].size(); j++) {
+            grid[i][j][0] = i;
+            grid[i][j][1] = j;
+            grid[i][j][2] = 0.0f;
+        }
+    }
+
+    // Access and print the elements of the grid
+    for (int i = 0; i < grid.size(); i++) {
+        for (int j = 0; j < grid[i].size(); j++) {
+            std::cout << "(" << grid[i][j][0] << ", " << grid[i][j][1] << ", " << grid[i][j][2] << ") ";
+        }
+        std::cout << std::endl;
+    }
+
+
+    return grid;
+}
 

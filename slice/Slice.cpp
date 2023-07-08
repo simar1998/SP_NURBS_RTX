@@ -34,7 +34,7 @@ void Slice::beginSlice(std::string filePath, Printer printer) {
         std::cout << "X : " << std::to_string(interpolatedPoints[i][0]) << "Y : " << std::to_string(interpolatedPoints[i][1]) << std::endl;
     }
 
-
+    
 
 
 }

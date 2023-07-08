@@ -45,6 +45,8 @@ public:
     void planeIntersect2(float z);
 
     bool isPointInMesh(Vec3 point);
+
+    std::vector<std::vector<Vec3>> generateOvercastRayField();
 };
 
 
