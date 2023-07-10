@@ -106,6 +106,7 @@ int main(){
             50              // Maytxfximum intersection distance
     };
     meshIntersect.perform_intersect(ray);
+    meshIntersect.generateOvercastRayField();
 
 //    std::cout << "Welcome to Sculpt Path" << std::endl;
 //    std::string filePath = R"(C:\Code\SculptPlane\test_mp_2.obj)";

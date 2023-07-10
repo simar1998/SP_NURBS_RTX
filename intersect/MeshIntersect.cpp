@@ -273,25 +273,56 @@ std::vector<std::vector<Vec3>> MeshIntersect::generateOvercastRayField() {
     interPotPoints.emplace_back(minMax[0].values[0], minMax[0].values[1], minMax[1].values[2] + zOffsetVal);//min  most x point
     interPotPoints.emplace_back(minMax[1].values[0], minMax[0].values[1], minMax[1].values[2] + zOffsetVal);//max most x  point
     // Take these values and initiate y axis lin plot from each interpolated point in matrix
-    std::vector<Vec3> initLinPot = pol.createInterpolatedPoints(interPotPoints);
+    std::vector<Vec3> xAxisLinPot = pol.createInterpolatedPoints(interPotPoints);
 
-    int nVal = initLinPot.size();//Dimension 1 overcast n matrix
+    int nVal = xAxisLinPot.size();//Dimension 1 overcast n matrix
 
+    //Pirinting out test vals
     std::vector<std::vector<Vec3>> grid(nVal, std::vector<Vec3>(nVal));
-    for (int i = 0; i < initLinPot.size(); ++i) {
-        std::cout << std::to_string(initLinPot[i].values[0]) << std::to_string(initLinPot[i].values[1]) << std::to_string(initLinPot[i].values[2])<< std::endl;
+    for (int i = 0; i < xAxisLinPot.size(); ++i) {
+        std::cout << std::to_string(xAxisLinPot[i].values[0])
+                  << std::to_string(xAxisLinPot[i].values[1]) <<
+                  std::to_string(xAxisLinPot[i].values[2]) << std::endl;
     }
-    //Create
+    std::vector<std::vector<Vec3>> yAxisLinPot;
+    for (int i = 0; i < xAxisLinPot.size(); ++i) {
+        //Generate each linPot method at minMax of interpolated points and then generate linearly interpolated points along the y axis
+        std::vector<Vec3> downcastInitPotPoints;
+        downcastInitPotPoints.emplace_back(xAxisLinPot[i].values[0], minMax[0].values[1], minMax[1].values[2] + zOffsetVal);
+        downcastInitPotPoints.emplace_back(xAxisLinPot[i].values[0], minMax[1].values[1], minMax[1].values[2] + zOffsetVal);
+        std::vector<Vec3> downCastLinPot = pol.createInterpolatedPoints(downcastInitPotPoints);
+        //Append to yAxis lin pot to later create grid appending logic
+        yAxisLinPot[i] =  downcastInitPotPoints;
+    }
     // Assign values to the elements of the grid
-    //FIXME add linpot method to assertain origin location to poplutate grid
+    //Iteratively add linpot Values into the grid matrix
     for (int i = 0; i < grid.size(); i++) {
         for (int j = 0; j < grid[i].size(); j++) {
-            grid[i][j][0] = i;
-            grid[i][j][1] = j;
-            grid[i][j][2] = 0.0f;
+            grid[i][j][0] = xAxisLinPot[i].values[0];
+            grid[i][j][1] = yAxisLinPot[i][j].values[1];
+            grid[i][j][2] = minMax[1].values[2] + zOffsetVal;
         }
     }
 
+    //Intersect grid
+    std::vector<std::vector<float>> intersectGrid;
+
+    //Mesh Intersect object and loading the mesh in
+
+    //Iterate over the grid and perform ray casting operations
+    for(int i = 0; i < grid.size(); ++i) {
+        for(int j = 0; j < grid[i].size(); ++j) {
+            //Genrate Ray object at grid location pointing down
+                auto downCastray = Ray {
+            Vec3(grid[i][j].values[0], grid[i][j].values[1] , minMax[1].values[2] + zOffsetVal), // Ray origin
+            Vec3(0., 0., -1.), // Ray direction pointing down for ray mesh overcast method
+            0.,               // Minimum intersection distance
+            abs(minMax[0].values[2] - minMax[1].values[2])              // Maytxfximum intersection distance
+            };
+                //Performs intersect and appends to the grid value of the vector
+            intersectGrid[i][j] = perform_intersect(downCastray);
+        }
+    }
     // Access and print the elements of the grid
     for (int i = 0; i < grid.size(); i++) {
         for (int j = 0; j < grid[i].size(); j++) {
