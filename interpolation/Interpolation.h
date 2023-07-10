@@ -16,6 +16,7 @@ class Interpolation {
 
 public:
     std::vector<Vec3> createInterpolatedPoints(std::vector<Vec3> points);
+    std::vector<Vec3> interpolationTwoPoint(Vec3 p1, Vec3 p2, int n);
 
 private:
     // Calculate the Euclidean distance between two points

@@ -38,3 +38,8 @@ std::vector<Interpolation::Vec3> Interpolation::createInterpolatedPoints(std::ve
 
     return interpolatedPoints;
 }
+
+std::vector<Interpolation::Vec3> Interpolation::interpolationTwoPoint(Interpolation::Vec3 p1, Interpolation::Vec3 p2, int n) {
+
+    return std::vector<Vec3>();
+}

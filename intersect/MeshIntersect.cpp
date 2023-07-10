@@ -261,14 +261,27 @@ std::vector<std::vector<Vec3>> MeshIntersect::generateOvercastRayField() {
 
     float zOffsetVal = 10;//Positive offset for z axis
 
-
+    float sepDif = 0.5f;
 
     //FIXME, figure out linpot n value which will be used for populating matrix and determine the grid size
 
-    int nVal;//FIXME value not provided, will not work with calcs done
+    float divNumX = abs(minMax[0].values[0] - minMax[0].values[1]);
+    float divNumY = abs(minMax[1].values[0] - minMax[1].values[1]);
+
+    Interpolation pol;
+    std::vector<Vec3> interPotPoints;
+    interPotPoints.emplace_back(minMax[0].values[0], minMax[0].values[1], minMax[1].values[2] + zOffsetVal);//min  most x point
+    interPotPoints.emplace_back(minMax[1].values[0], minMax[0].values[1], minMax[1].values[2] + zOffsetVal);//max most x  point
+    // Take these values and initiate y axis lin plot from each interpolated point in matrix
+    std::vector<Vec3> initLinPot = pol.createInterpolatedPoints(interPotPoints);
+
+    int nVal = initLinPot.size();//Dimension 1 overcast n matrix
 
     std::vector<std::vector<Vec3>> grid(nVal, std::vector<Vec3>(nVal));
-
+    for (int i = 0; i < initLinPot.size(); ++i) {
+        std::cout << std::to_string(initLinPot[i].values[0]) << std::to_string(initLinPot[i].values[1]) << std::to_string(initLinPot[i].values[2])<< std::endl;
+    }
+    //Create
     // Assign values to the elements of the grid
     //FIXME add linpot method to assertain origin location to poplutate grid
     for (int i = 0; i < grid.size(); i++) {
