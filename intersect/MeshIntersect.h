@@ -35,7 +35,7 @@ class MeshIntersect {
 
 public:
     void loadMesh(std::string filePath);
-    int perform_intersect(bvh::v2::Ray<Scalar, 3> ray);
+    float perform_intersect(bvh::v2::Ray<Scalar, 3> ray);
     void print_triangles();
 
     std::vector<Vec3> planeIntersect(float z, bool printOut = false);

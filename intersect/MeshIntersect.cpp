@@ -14,7 +14,7 @@ void MeshIntersect::loadMesh(std::string filePath) {
 
 //Ray intersect builder
 //TODO chage output to object for ease of usage
-int MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar, 3> ray) {
+float MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar, 3> ray) {
 
     bvh::v2::ThreadPool thread_pool;
     bvh::v2::ParallelExecutor executor(thread_pool);
@@ -72,10 +72,10 @@ int MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar, 3> ray) {
                 << "  primitive: " << prim_id << "\n"
                 << "  distance: " << ray.tmax << "\n"
                 << "  barycentric coords.: " << u << ", " << v << std::endl;
-        return 0;
+        return ray.tmax;
     } else {
         std::cout << "No intersection found" << std::endl;
-        return 1;
+        return -1;
     }
 
 }
@@ -284,6 +284,8 @@ std::vector<std::vector<Vec3>> MeshIntersect::generateOvercastRayField() {
                   << std::to_string(xAxisLinPot[i].values[1]) <<
                   std::to_string(xAxisLinPot[i].values[2]) << std::endl;
     }
+    std::cout << "Debug message " << std::endl;
+
     std::vector<std::vector<Vec3>> yAxisLinPot;
     for (int i = 0; i < xAxisLinPot.size(); ++i) {
         //Generate each linPot method at minMax of interpolated points and then generate linearly interpolated points along the y axis
@@ -294,6 +296,8 @@ std::vector<std::vector<Vec3>> MeshIntersect::generateOvercastRayField() {
         //Append to yAxis lin pot to later create grid appending logic
         yAxisLinPot[i] =  downcastInitPotPoints;
     }
+
+    std::cout << "Here debug message" << std::endl;
     // Assign values to the elements of the grid
     //Iteratively add linpot Values into the grid matrix
     for (int i = 0; i < grid.size(); i++) {
@@ -317,7 +321,7 @@ std::vector<std::vector<Vec3>> MeshIntersect::generateOvercastRayField() {
             Vec3(grid[i][j].values[0], grid[i][j].values[1] , minMax[1].values[2] + zOffsetVal), // Ray origin
             Vec3(0., 0., -1.), // Ray direction pointing down for ray mesh overcast method
             0.,               // Minimum intersection distance
-            abs(minMax[0].values[2] - minMax[1].values[2])              // Maytxfximum intersection distance
+            1000            // Maytxfximum intersection distance
             };
                 //Performs intersect and appends to the grid value of the vector
             intersectGrid[i][j] = perform_intersect(downCastray);
@@ -329,6 +333,12 @@ std::vector<std::vector<Vec3>> MeshIntersect::generateOvercastRayField() {
             std::cout << "(" << grid[i][j][0] << ", " << grid[i][j][1] << ", " << grid[i][j][2] << ") ";
         }
         std::cout << std::endl;
+    }
+        std::cout << "Size of intersect grid values " << intersectGrid.size() << std::endl;
+    for (int i = 0; i < intersectGrid.size(); ++i) {
+        for (int j = 0; j < intersectGrid[i].size(); ++j) {
+            std::cout << "Intersect Value : " << intersectGrid[i][j] << std::endl;
+    }
     }
 
 
