@@ -20,6 +20,8 @@
 #include <list>
 
 
+
+
 class MeshIntersect {
     using Scalar = float;
     using Vec3 = bvh::v2::Vec<Scalar, 3>;
@@ -31,11 +33,23 @@ class MeshIntersect {
     std::vector<Tri> tris;
     using PrecomputedTri = bvh::v2::PrecomputedTri<Scalar>;
     using Plane = bvh::v2::Plane<float,3>;
+    const float overcastZvalOffset = 3.0f;
+    const float offsetValXY = 2.0f;
+
 
 
 public:
+
+    struct intersection{
+        Ray originRay;
+        float distance;
+        int primitiveHit = 0;
+        float u, v;
+        Vec3 intersectionPoint;
+    };
+
     void loadMesh(std::string filePath);
-    float perform_intersect(bvh::v2::Ray<Scalar, 3> ray);
+    MeshIntersect::intersection perform_intersect(bvh::v2::Ray<Scalar, 3> ray);
     void print_triangles();
 
     std::vector<Vec3> planeIntersect(float z, bool printOut = false);
@@ -47,6 +61,9 @@ public:
     bool isPointInMesh(Vec3 point);
 
     std::vector<std::vector<Vec3>> generateOvercastRayField();
+    std::vector<std::vector<Vec3>> generateLinOvercastRayField(float samplingDist);
+    std::vector<std::vector<MeshIntersect::intersection>> gridPlaneIntersect(std::vector<std::vector<Vec3>> gridPlane);
+    Vec3 computeVecPoint(MeshIntersect::intersection intersection);
 };
 
 

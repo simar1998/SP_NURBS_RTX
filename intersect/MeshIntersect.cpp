@@ -14,11 +14,11 @@ void MeshIntersect::loadMesh(std::string filePath) {
 
 //Ray intersect builder
 //TODO chage output to object for ease of usage
-float MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar, 3> ray) {
+MeshIntersect::intersection MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar, 3> ray) {
 
     bvh::v2::ThreadPool thread_pool;
     bvh::v2::ParallelExecutor executor(thread_pool);
-
+    MeshIntersect::intersection intersection;
     // Get triangle centers and bounding boxes (required for BVH builder)
     std::vector<BBox> bboxes(tris.size());
     std::vector<Vec3> centers(tris.size());
@@ -72,10 +72,15 @@ float MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar, 3> ray) {
                 << "  primitive: " << prim_id << "\n"
                 << "  distance: " << ray.tmax << "\n"
                 << "  barycentric coords.: " << u << ", " << v << std::endl;
-        return ray.tmax;
+        intersection.originRay = ray;
+        intersection.distance = ray.tmax;
+        intersection.primitiveHit = prim_id;
+        intersection.u = u;
+        intersection.v = v;
+        return intersection;
     } else {
         std::cout << "No intersection found" << std::endl;
-        return -1;
+        return intersection;
     }
 
 }
@@ -242,8 +247,8 @@ bool MeshIntersect::isPointInMesh(Vec3 point) {
             0.,               // Minimum intersection distance
             meshHeight + 100.0f             // Max rtx fximum intersection distance based on meshheight and arbitary large float amount
     };
-    int isIntersect = perform_intersect(ray);
-    if (isIntersect != 1){
+    int isIntersect = perform_intersect(ray).primitiveHit;
+    if (isIntersect > 0){
         return true;
     }
     return false;
@@ -324,7 +329,7 @@ std::vector<std::vector<Vec3>> MeshIntersect::generateOvercastRayField() {
             1000            // Maytxfximum intersection distance
             };
                 //Performs intersect and appends to the grid value of the vector
-            intersectGrid[i][j] = perform_intersect(downCastray);
+           // intersectGrid[i][j] = perform_intersect(downCastray);
         }
     }
     // Access and print the elements of the grid
@@ -344,4 +349,44 @@ std::vector<std::vector<Vec3>> MeshIntersect::generateOvercastRayField() {
 
     return grid;
 }
+std::vector<std::vector<Vec3>> MeshIntersect::generateLinOvercastRayField(float samplingDist) {
+
+    std::vector<Vec3> minMax = getMinMax();
+    Vec3 gridOrigin = Vec3(minMax[0].values[0] - offsetValXY, minMax[0].values[1] - offsetValXY, minMax[1].values[2] + overcastZvalOffset);
+
+    std::vector<std::vector<Vec3>> grid;
+
+    for (float i = gridOrigin.values[0]; i <= minMax[1].values[0] + offsetValXY; i+= samplingDist) {
+        std::vector<Vec3> tempVec;
+        for (float j = gridOrigin.values[1]; j <= minMax[1].values[1] + offsetValXY; j+= samplingDist) {
+            Vec3 temp(i, j, minMax[1].values[2] + overcastZvalOffset);
+            tempVec.push_back(temp);
+        }
+
+        grid.push_back(tempVec);
+    }
+
+    return grid;
+}
+
+//Performs Ray intersect with grid plance offsetted on the z axis plane and returns intersect values
+std::vector<std::vector<MeshIntersect::intersection>>
+MeshIntersect::gridPlaneIntersect(std::vector<std::vector<Vec3>> gridPlane) {
+    std::vector<std::vector<MeshIntersect::intersection>> intersectGrid;
+    for (int i = 0; i <= gridPlane.size(); ++i) {
+        for (int j = 0; j < gridPlane[i].size(); ++j) {
+
+        }
+    }
+    return intersectGrid;
+}
+
+//Compute Vec3d point from barycentric cords and prim vertex values
+Vec3 MeshIntersect::computeVecPoint(MeshIntersect::intersection intersection) {
+
+    return MeshIntersect::Vec3();
+}
+
+
+
 
