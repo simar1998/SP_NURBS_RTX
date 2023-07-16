@@ -34,7 +34,7 @@ MeshIntersect::intersection MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar
     auto bvh = bvh::v2::DefaultBuilder<Node>::build(thread_pool, bboxes, centers, config);
 
     // Permuting the primitive data allows to remove indirections during traversal, which makes it faster.
-    static constexpr bool should_permute = false;
+    static constexpr bool should_permute = true;
 
     // This precomputes some data to speed up traversal further.
     std::vector<PrecomputedTri> precomputed_tris(tris.size());
@@ -47,7 +47,7 @@ MeshIntersect::intersection MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar
 
     static constexpr size_t invalid_id = std::numeric_limits<size_t>::max();
     static constexpr size_t stack_size = 64;
-    static constexpr bool use_robust_traversal = false;
+    static constexpr bool use_robust_traversal = true;
 
     auto prim_id = invalid_id;
     Scalar u, v;
@@ -77,9 +77,11 @@ MeshIntersect::intersection MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar
         intersection.primitiveHit = prim_id;
         intersection.u = u;
         intersection.v = v;
+        //intersection.intersectionPoint = computeVecPoint(intersection);
         return intersection;
     } else {
-        std::cout << "No intersection found" << std::endl;
+       //// std::cout << "No intersection found" << std::endl;
+        intersection.primitiveHit = -1;
         return intersection;
     }
 
@@ -358,14 +360,18 @@ std::vector<std::vector<Vec3>> MeshIntersect::generateLinOvercastRayField(float 
 
     for (float i = gridOrigin.values[0]; i <= minMax[1].values[0] + offsetValXY; i+= samplingDist) {
         std::vector<Vec3> tempVec;
+       // std::cout << "i:" << i <<std::endl;
         for (float j = gridOrigin.values[1]; j <= minMax[1].values[1] + offsetValXY; j+= samplingDist) {
-            Vec3 temp(i, j, minMax[1].values[2] + overcastZvalOffset);
-            tempVec.push_back(temp);
-        }
+            //std::cout << "i:" << i << "j:" << j << "z:" <<  minMax[1].values[2] + overcastZvalOffset <<std::endl;
+            tempVec.emplace_back(i, j, 2.0f);
 
+            //tempVec.emplace_back(i, j, minMax[0].values[2] + overcastZvalOffset);
+            //std::cout << "X : " << std::to_string(temp.values[0]) << " Y :" << std::to_string(temp.values[1]) << " Z :" << std::to_string(temp.values[2]) << std::endl;
+        }
+        //std::cout << tempVec.size() << std::endl;
         grid.push_back(tempVec);
     }
-
+    std::cout << "Temp vec size: " << grid.size() << std::endl;
     return grid;
 }
 
@@ -373,18 +379,34 @@ std::vector<std::vector<Vec3>> MeshIntersect::generateLinOvercastRayField(float 
 std::vector<std::vector<MeshIntersect::intersection>>
 MeshIntersect::gridPlaneIntersect(std::vector<std::vector<Vec3>> gridPlane) {
     std::vector<std::vector<MeshIntersect::intersection>> intersectGrid;
+    std::cout << "Performing gird intersect " << std::endl;
     for (int i = 0; i <= gridPlane.size(); ++i) {
+        std::vector<MeshIntersect::intersection> tempIntersection;
         for (int j = 0; j < gridPlane[i].size(); ++j) {
-
+            std::cout << gridPlane[i][j].values[0] << "," << gridPlane[i][j].values[1] << "," << gridPlane[i][j].values[2] << std::endl;
+            auto ray = Ray {
+            Vec3(gridPlane[i][j].values[0], gridPlane[i][j].values[1], gridPlane[i][j].values[2]), // Ray origin
+            Vec3(0., 0., -1.0f), // Ray direction pointing down
+            0.,               // Minimum intersection distance
+            50              // Maytxfximum intersection distance
+            };
+            //MeshIntersect::intersection  intersection= perform_intersect(ray);
+            //if (intersection.primitiveHit != -1){
+                tempIntersection.push_back(perform_intersect(ray));
+                //std::cout << intersectGrid[i][j] << std::endl;
+            //}
         }
+        intersectGrid.push_back(tempIntersection);
+        //std::cout  << "Interation " << std::endl;
     }
     return intersectGrid;
 }
 
-//Compute Vec3d point from barycentric cords and prim vertex values
+//Compute Vec3 point from barycentric cords and prim vertex values
 Vec3 MeshIntersect::computeVecPoint(MeshIntersect::intersection intersection) {
-
-    return MeshIntersect::Vec3();
+    float w = 1.0f - intersection.u - intersection.v;
+    Vec3 p = (tris[intersection.primitiveHit].p0) * w + (tris[intersection.primitiveHit].p1) * intersection.u + (tris[intersection.primitiveHit].p2) * intersection.v;
+    return p;
 }
 
 

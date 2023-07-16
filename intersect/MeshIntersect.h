@@ -34,7 +34,7 @@ class MeshIntersect {
     using PrecomputedTri = bvh::v2::PrecomputedTri<Scalar>;
     using Plane = bvh::v2::Plane<float,3>;
     const float overcastZvalOffset = 3.0f;
-    const float offsetValXY = 2.0f;
+    const float offsetValXY = 1.0f;
 
 
 
@@ -46,6 +46,15 @@ public:
         int primitiveHit = 0;
         float u, v;
         Vec3 intersectionPoint;
+
+        // Assumed the relevant definitions exist for these types as well
+        friend std::ostream& operator<<(std::ostream& os, const intersection& i) {
+            os << "Distance: " << i.distance << "\n"
+               << "PrimitiveHit: " << i.primitiveHit << "\n";
+               //<< "IntersectionPoint: " << std::to_string(i.intersectionPoint.values[0]) << ","  << std::to_string(i.intersectionPoint.values[1]) << "," << std::to_string(i.intersectionPoint.values[2]); // Likewise for Vec3
+               return os;
+        }
+
     };
 
     void loadMesh(std::string filePath);

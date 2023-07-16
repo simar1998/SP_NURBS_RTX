@@ -45,6 +45,7 @@ namespace bvh::v2 {
             static_for<0, N>([&](size_t i) { v[i] = f(i); });
             return v;
         }
+
     };
 
     template <typename T, size_t N>
