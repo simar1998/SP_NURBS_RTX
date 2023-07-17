@@ -8,6 +8,7 @@
 #include "nurbs/tests/catch.hpp"
 #include "gcode/Printer.h"
 #include "slice/Slice.h"
+#include "simple_example.h"
 //
 // Created by simar on 6/12/2023.
 //
@@ -73,7 +74,7 @@ int main(){
 //    slice.beginSlice(R"(C:\code\SP_NURBS_RTX\test_mp_2.obj)", printer);
 //
 //    std::cout << "Welcome to Sculpt Path" << std::endl;
-    std::string filePath = R"(C:\code\SP_NURBS_RTX\test_mp_2.obj)";
+    std::string filePath = R"(C:\Code\SculptPlane\test_mp_2.obj)";
 //    std::cout<<"Loading file : "<<filePath <<std::endl;
 //    testNurbs();
 //    //printTriangles(filePath);
@@ -109,6 +110,7 @@ int main(){
     meshIntersect.getMinMax(true);
     std::vector<std::vector<Vec3>> grid = meshIntersect.generateLinOvercastRayField(0.5f);
     meshIntersect.gridPlaneIntersect(grid);
+   // meshIntersect.getMinMax(true);
 
 //    std::cout << "Welcome to Sculpt Path" << std::endl;
 //    std::string filePath = R"(C:\Code\SculptPlane\test_mp_2.obj)";
@@ -137,29 +139,33 @@ int main(){
 //    }
 //
 //
+   // testMesh(filePath, 5.0f, 5.0f);
+    //testMesh(filePath, -5.0f, 1.0f);
+   // testMesh(filePath, -5.0f, -1.0f);
+   // testMesh(filePath, -5.0f, 0.5f);
     ray = Ray {
-            Vec3(0., 0.,0.3), // Ray origin
+            Vec3(0., 5.,-3.), // Ray origin
             Vec3(0., 0., 1.), // Ray direction
             0.,               // Minimum intersection distance
-            50              // Maytxfximum intersection distance
+            50.              // Maytxfximum intersection distance
     };
-    meshIntersect.perform_intersect(ray);
+    //meshIntersect.perform_intersect(ray);
 
     ray = Ray {
-            Vec3(0., 2,0.3), // Ray origin
+            Vec3(0., 0.,-3.), // Ray origin
             Vec3(0., 0., 1.), // Ray direction
             0.,               // Minimum intersection distance
-            50              // Maximum intersection distance
+            50.              // Maximum intersection distance
     };
-    meshIntersect.perform_intersect(ray);
+    //meshIntersect.perform_intersect(ray);
 
     ray = Ray {
             Vec3(0., 2,0.3), // Ray origin
             Vec3(0., 1., 0.), // Ray direction
             0.,               // Minimum intersection distance
-            50              // Maximum intersection distance
+            50.              // Maximum intersection distance
     };
-    meshIntersect.perform_intersect(ray);
+    //meshIntersect.perform_intersect(ray);
 }
 
 

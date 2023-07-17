@@ -26,7 +26,7 @@ using Ray     = bvh::v2::Ray<Scalar, 3>;
 
 using PrecomputedTri = bvh::v2::PrecomputedTri<Scalar>;
 
-int testMesh(const std::string filePath) {
+int testMesh(std::string filePath, float  x, float y) {
     // This is the original data, which may come in some other data type/structure.
     std::vector<Tri> tris = load_obj<Scalar>(filePath);
 
@@ -61,8 +61,8 @@ int testMesh(const std::string filePath) {
     });
 
     auto ray = Ray {
-            Vec3(0., 0., 0.), // Ray origin
-            Vec3(0., 0., 1.), // Ray direction
+            Vec3(0., x, y), // Ray origin
+            Vec3(0., 0., -1.), // Ray direction
             0.,               // Minimum intersection distance
             100.              // Maximum intersection distance
     };

@@ -40,6 +40,8 @@ class MeshIntersect {
 
 public:
 
+    std::string filePath;
+
     struct intersection{
         Ray originRay;
         float distance;
@@ -47,18 +49,17 @@ public:
         float u, v;
         Vec3 intersectionPoint;
 
-        // Assumed the relevant definitions exist for these types as well
-        friend std::ostream& operator<<(std::ostream& os, const intersection& i) {
-            os << "Distance: " << i.distance << "\n"
-               << "PrimitiveHit: " << i.primitiveHit << "\n";
-               //<< "IntersectionPoint: " << std::to_string(i.intersectionPoint.values[0]) << ","  << std::to_string(i.intersectionPoint.values[1]) << "," << std::to_string(i.intersectionPoint.values[2]); // Likewise for Vec3
-               return os;
-        }
-
     };
 
+    float calculateDistance(Vec3 point1, Vec3 point2) {
+        float dx = point2.values[0] - point1.values[0];
+        float dy = point2.values[1] - point1.values[1];
+        float dz = point2.values[2] - point1.values[2];
+        return std::sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
     void loadMesh(std::string filePath);
-    MeshIntersect::intersection perform_intersect(bvh::v2::Ray<Scalar, 3> ray);
+    std::vector<MeshIntersect::intersection> perform_intersect(bvh::v2::Ray<Scalar, 3> ray);
     void print_triangles();
 
     std::vector<Vec3> planeIntersect(float z, bool printOut = false);
@@ -73,6 +74,10 @@ public:
     std::vector<std::vector<Vec3>> generateLinOvercastRayField(float samplingDist);
     std::vector<std::vector<MeshIntersect::intersection>> gridPlaneIntersect(std::vector<std::vector<Vec3>> gridPlane);
     Vec3 computeVecPoint(MeshIntersect::intersection intersection);
+
+    intersection rayIntersect(Ray& ray);
+
+    std::vector<intersection> gridPlaneIntersectSimple(std::vector<std::vector<Vec3>> gridPlane);
 };
 
 

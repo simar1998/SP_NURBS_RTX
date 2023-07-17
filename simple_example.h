@@ -24,6 +24,6 @@ using Ray = bvh::v2::Ray<Scalar, 3>;
 
 using PrecomputedTri = bvh::v2::PrecomputedTri<Scalar>;
 
-int testMesh(const std::string filePath);
+int testMesh(const std::string filePath, float d, float d1);
 
 #endif // MESH_CALC_H

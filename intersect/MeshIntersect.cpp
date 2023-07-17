@@ -9,12 +9,16 @@
 #include "../simple_example.h"
 #include "../interpolation/Interpolation.h"
 void MeshIntersect::loadMesh(std::string filePath) {
+    MeshIntersect::filePath = filePath;
     tris = load_obj<Scalar>(filePath);
 }
 
 //Ray intersect builder
 //TODO chage output to object for ease of usage
-MeshIntersect::intersection MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar, 3> ray) {
+//Add data cleaning and remove primative hits outside the bounds, Tehcnically speaking for test mesh only two hits allowed if primative is not parralel to ray
+std::vector<MeshIntersect::intersection> MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar, 3> ray) {
+
+    std::vector<MeshIntersect::intersection>  intersectionList;
 
     bvh::v2::ThreadPool thread_pool;
     bvh::v2::ParallelExecutor executor(thread_pool);
@@ -34,7 +38,7 @@ MeshIntersect::intersection MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar
     auto bvh = bvh::v2::DefaultBuilder<Node>::build(thread_pool, bboxes, centers, config);
 
     // Permuting the primitive data allows to remove indirections during traversal, which makes it faster.
-    static constexpr bool should_permute = true;
+    static constexpr bool should_permute = false;
 
     // This precomputes some data to speed up traversal further.
     std::vector<PrecomputedTri> precomputed_tris(tris.size());
@@ -53,18 +57,50 @@ MeshIntersect::intersection MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar
     Scalar u, v;
 
     // Traverse the BVH and get the u, v coordinates of the closest intersection.
-    bvh::v2::SmallStack<Bvh::Index, stack_size> stack;
-    bvh.intersect<true, use_robust_traversal>(ray, bvh.get_root().index, stack,
-                                               [&] (size_t begin, size_t end) {
-                                                   for (size_t i = begin; i < end; ++i) {
-                                                       size_t j = should_permute ? i : bvh.prim_ids[i];
-                                                       if (auto hit = precomputed_tris[j].intersect(ray)) {
-                                                           prim_id = i;
-                                                           std::tie(u, v) = *hit;
-                                                       }
-                                                   }
-                                                   return prim_id != invalid_id;
-                                               });
+//    bvh::v2::SmallStack<Bvh::Index, stack_size> stack;
+//    bvh.intersect<true, use_robust_traversal>(ray, bvh.get_root().index, stack,
+//                                               [&] (size_t begin, size_t end) {
+//                                                   for (size_t i = begin; i < end; ++i) {
+//                                                       size_t j = should_permute ? i : bvh.prim_ids[i];
+//                                                       if (auto hit = precomputed_tris[j].intersect(ray)) {
+//                                                           prim_id = i;
+//                                                           std::tie(u, v) = *hit;
+//                                                           auto w = 1.0f - u - v;
+//                                                           Vec3 intersection = u * tris[prim_id].p0 + v * tris[prim_id].p1 + w * tris[prim_id].p2;
+//                                                           float newDistance = MeshIntersect::calculateDistance(ray.org,intersection);
+//                                                           std::cout << "Test intersect :"  << newDistance << std::endl;
+//                                                       }
+//                                                   }
+//                                                   return prim_id != invalid_id;
+//                                               });
+
+                                                bvh::v2::SmallStack<Bvh::Index, stack_size> stack;
+                                                bvh.intersect<true, use_robust_traversal>(ray, bvh.get_root().index, stack,
+                                              [&] (size_t begin, size_t end) {
+                                                  for (size_t i = begin; i < end; ++i) {
+                                                      size_t j = should_permute ? i : bvh.prim_ids[i];
+                                                      if (auto hit = precomputed_tris[j].intersect(ray)) {
+                                                          std::tie(u, v) = *hit;
+                                                          auto w = 1.0f - u - v;
+                                                          Vec3 intersection = u * tris[j].p0 + v * tris[j].p1 + w * tris[j].p2;
+                                                          float newDistance = MeshIntersect::calculateDistance(ray.org,intersection);
+                                                          std::cout
+                                                                  << "Intersection found\n"
+                                                                  << "  primitive: " << j << "\n"
+                                                                  << "  distance: " << newDistance << "\n"
+                                                                  << "  barycentric coords.: " << u << ", " << v << std::endl;
+                                                          std::cout << "Test intersect :"  << newDistance << std::endl;
+                                                          MeshIntersect::intersection intersection_obj;
+                                                          intersection_obj.originRay = ray;
+                                                          intersection_obj.distance = newDistance;
+                                                          intersection_obj.primitiveHit = j;
+                                                          intersection_obj.u = u;
+                                                          intersection_obj.v = v;
+                                                          intersectionList.push_back(intersection_obj);
+                                                      }
+                                                  }
+                                                  return false;  // do not terminate BVH traversal
+                                              });
 
     if (prim_id != invalid_id) {
         std::cout
@@ -78,12 +114,14 @@ MeshIntersect::intersection MeshIntersect::perform_intersect(bvh::v2::Ray<Scalar
         intersection.u = u;
         intersection.v = v;
         //intersection.intersectionPoint = computeVecPoint(intersection);
-        return intersection;
+        //intersectionList.push_back(intersection);
     } else {
        //// std::cout << "No intersection found" << std::endl;
         intersection.primitiveHit = -1;
-        return intersection;
+        prim_id = 0;
+        ray.tmax = 0;
     }
+    return intersectionList;
 
 }
 //TODO Deprecated , stored for historical purposes
@@ -247,9 +285,10 @@ bool MeshIntersect::isPointInMesh(Vec3 point) {
             point,// Ray origin same as param
             Vec3(0., 0., 1.), // Ray direction pointing up, easy way to check ray intersect
             0.,               // Minimum intersection distance
+            //FIXME arbitary value not very good as might cause issues based on mesh bounding box
             meshHeight + 100.0f             // Max rtx fximum intersection distance based on meshheight and arbitary large float amount
     };
-    int isIntersect = perform_intersect(ray).primitiveHit;
+    int isIntersect = -1;
     if (isIntersect > 0){
         return true;
     }
@@ -259,7 +298,7 @@ bool MeshIntersect::isPointInMesh(Vec3 point) {
 
 /**
  * Creates a overcast matrix field from which the a series of Ray intersect tests are performed
- * - Must have an height differential and must compute min max and plane from which the ray matrix is generated must be above the file
+ * - Must have an height differential and must compute min max and plane from which the ray matrix is generated must be above the mesh
  * - Currently has sinmple linear system based interpolation technique to determine the distance in which the ray cast occours
  */
 std::vector<std::vector<Vec3>> MeshIntersect::generateOvercastRayField() {
@@ -363,9 +402,9 @@ std::vector<std::vector<Vec3>> MeshIntersect::generateLinOvercastRayField(float 
        // std::cout << "i:" << i <<std::endl;
         for (float j = gridOrigin.values[1]; j <= minMax[1].values[1] + offsetValXY; j+= samplingDist) {
             //std::cout << "i:" << i << "j:" << j << "z:" <<  minMax[1].values[2] + overcastZvalOffset <<std::endl;
-            tempVec.emplace_back(i, j, 2.0f);
+            //tempVec.emplace_back(i, j, 3.0000f);
 
-            //tempVec.emplace_back(i, j, minMax[0].values[2] + overcastZvalOffset);
+            tempVec.emplace_back(i, j, minMax[0].values[2] + overcastZvalOffset);
             //std::cout << "X : " << std::to_string(temp.values[0]) << " Y :" << std::to_string(temp.values[1]) << " Z :" << std::to_string(temp.values[2]) << std::endl;
         }
         //std::cout << tempVec.size() << std::endl;
@@ -383,23 +422,43 @@ MeshIntersect::gridPlaneIntersect(std::vector<std::vector<Vec3>> gridPlane) {
     for (int i = 0; i <= gridPlane.size(); ++i) {
         std::vector<MeshIntersect::intersection> tempIntersection;
         for (int j = 0; j < gridPlane[i].size(); ++j) {
-            std::cout << gridPlane[i][j].values[0] << "," << gridPlane[i][j].values[1] << "," << gridPlane[i][j].values[2] << std::endl;
+           // loadMesh(filePath);
             auto ray = Ray {
             Vec3(gridPlane[i][j].values[0], gridPlane[i][j].values[1], gridPlane[i][j].values[2]), // Ray origin
             Vec3(0., 0., -1.0f), // Ray direction pointing down
             0.,               // Minimum intersection distance
-            50              // Maytxfximum intersection distance
+            100.0f              // Maytxfximum intersection distance
             };
-            //MeshIntersect::intersection  intersection= perform_intersect(ray);
-            //if (intersection.primitiveHit != -1){
-                tempIntersection.push_back(perform_intersect(ray));
-                //std::cout << intersectGrid[i][j] << std::endl;
-            //}
+            std::vector<intersection> list = perform_intersect(ray);
+            for (int l = 0; l < list.size(); ++l) {
+                tempIntersection.push_back(list[l]);
+            }
         }
         intersectGrid.push_back(tempIntersection);
         //std::cout  << "Interation " << std::endl;
     }
     return intersectGrid;
+}
+std::vector<MeshIntersect::intersection>
+MeshIntersect::gridPlaneIntersectSimple(std::vector<std::vector<Vec3>> gridPlane) {
+std::vector<MeshIntersect::intersection> intersectList;
+    std::cout << "Performing gird intersect " << std::endl;
+    for (int i = 0; i <= gridPlane.size(); ++i) {
+        for (int j = 0; j < gridPlane[i].size(); ++j) {
+            //loadMesh(filePath);
+            auto ray = Ray {
+                    Vec3(gridPlane[i][j].values[0], gridPlane[i][j].values[1], gridPlane[i][j].values[2]), // Ray origin
+                    Vec3(0., 0., -1.0f), // Ray direction pointing down
+                    0.,               // Minimum intersection distance
+                    100.0f              // Maytxfximum intersection distance
+            };
+
+            intersectList.push_back(rayIntersect(ray));
+
+        }
+        //std::cout  << "Interation " << std::endl;
+    }
+    return intersectList;
 }
 
 //Compute Vec3 point from barycentric cords and prim vertex values
@@ -407,6 +466,85 @@ Vec3 MeshIntersect::computeVecPoint(MeshIntersect::intersection intersection) {
     float w = 1.0f - intersection.u - intersection.v;
     Vec3 p = (tris[intersection.primitiveHit].p0) * w + (tris[intersection.primitiveHit].p1) * intersection.u + (tris[intersection.primitiveHit].p2) * intersection.v;
     return p;
+}
+
+//Fixme Creates intersection values outside of the min max value for some reason
+/**
+ * Slower but pherhaps better and more consistent ray intersect method, takes one ray param and returns a intersection struct with data pretaining to the intersection
+ * @param ray
+ * @return
+ */
+MeshIntersect::intersection MeshIntersect::rayIntersect(MeshIntersect::Ray& ray){
+    MeshIntersect::intersection intersection;
+    intersection.primitiveHit = -1;
+    Vec3 rayOrigin = ray.org;
+    Vec3 rayDirection = ray.dir;
+
+    for (int i = 0; i < tris.size(); i++) {//Iterate over triangle list
+        Vec3 v1 = tris[i].p0;
+        Vec3 v2 = tris[i].p1;
+        Vec3 v3 = tris[i].p2;
+
+        //Checking if the ray is parallel to the triangle's plane
+        Vec3 edge1 = {v2.values[0] - v1.values[0], v2.values[1] - v1.values[1], v2.values[2] - v1.values[2]};
+        Vec3 edge2 = {v3.values[0] - v1.values[0], v3.values[1] - v1.values[1], v3.values[2] - v1.values[2]};
+
+        Vec3 normal = {
+                (edge1.values[0] * edge2.values[2]) - (edge1.values[2] * edge2.values[1]),
+                (edge1.values[2] * edge2.values[0]) - (edge1.values[0] * edge2.values[2]),
+                (edge1.values[0] * edge2.values[1]) - (edge1.values[1] * edge2.values[0])
+        };
+        float dotProduct = normal.values[0] * ray.org.values[0] +  normal.values[1] * ray.org.values[1] +  normal.values[2] * ray.org.values[2];
+        const float eps = 0.0001f;//Parallel tolerence
+
+        /**
+         *
+         */
+
+        if (std::fabs(dotProduct) < eps) {
+            // The ray is parallel to the triangle's plane
+            continue;
+        }
+
+        // Compute the intersection point P
+        float t = ((v1.values[0] - ray.org.values[0]) * normal.values[0] + (v1.values[1] - ray.org.values[1]) * normal.values[1] + (v1.values[2] -
+                ray.org.values[2]) * normal.values[2]) / dotProduct;
+        if (t < 0) {
+            // The intersection point is behind the ray's origin
+            continue;
+        }
+        Vec3 intersectionPoint = rayOrigin + rayDirection * t;
+
+        // Check if the intersection point P is inside the triangle
+        Vec3 c0 = {
+                (edge1.values[1] * (intersectionPoint.values[2] - v1.values[2])) - (edge1.values[2] * (intersectionPoint.values[1] - v1.values[1])),
+                (edge1.values[2] * (intersectionPoint.values[0] - v1.values[0])) - (edge1.values[0] * (intersectionPoint.values[2] - v1.values[2])),
+                (edge1.values[0] * (intersectionPoint.values[1] - v1.values[1])) - (edge1.values[1] * (intersectionPoint.values[0] - v1.values[0]))
+        };
+        Vec3 c1 = {
+                (edge2.values[1] * (intersectionPoint.values[2] - v2.values[2])) - (edge2.values[2] * (intersectionPoint.values[1] - v2.values[1])),
+                (edge2.values[2] * (intersectionPoint.values[0] - v2.values[0])) - (edge2.values[0] * (intersectionPoint.values[2] - v2.values[2])),
+                (edge2.values[0] * (intersectionPoint.values[1] - v2.values[1])) - (edge2.values[1] * (intersectionPoint.values[0] - v2.values[0]))
+        };
+        Vec3 c2 = {
+                (edge1.values[1] * (intersectionPoint.values[2] - v3.values[2])) - (edge1.values[2] * (intersectionPoint.values[1] - v3.values[1])),
+                (edge1.values[2] * (intersectionPoint.values[0] - v3.values[0])) - (edge1.values[0] * (intersectionPoint.values[2] - v3.values[2])),
+                (edge1.values[0] * (intersectionPoint.values[1] - v3.values[1])) - (edge1.values[1] * (intersectionPoint.values[0] - v3.values[0]))
+        };
+        float dot0 = c0.values[0] * normal.values[0] + c0.values[1] * normal.values[1] + c0.values[2] * normal.values[2];
+        float dot1 = c1.values[0] * normal.values[0] + c1.values[1] * normal.values[1] + c1.values[2] * normal.values[2];
+        float dot2 = c2.values[0] * normal.values[0] + c2.values[1] * normal.values[1] + c2.values[2] * normal.values[2];
+        if (dot0 >= 0 && dot1 >= 0 && dot2 >= 0) {
+            intersection.primitiveHit = i;
+            intersection.distance = t;
+            intersection.intersectionPoint = intersectionPoint;
+            std::cout << "Ray intersection detected at prim " << i << " at distance of " << t << " At point " << intersectionPoint.values[0] << "," << intersectionPoint.values[1] << "," << intersectionPoint.values[2] << "||" << std::endl;
+            std::cout << "Ray origin " << ray.org.values[0] << "," <<  ray.org.values[1] << "," << ray.org.values[2] << "|" << std::endl;
+            //return intersection;
+        }
+        // No intersection found
+    }
+    return intersection;
 }
 
 
