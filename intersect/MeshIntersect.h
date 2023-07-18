@@ -35,6 +35,7 @@ class MeshIntersect {
     using Plane = bvh::v2::Plane<float,3>;
     const float overcastZvalOffset = 3.0f;
     const float offsetValXY = 1.0f;
+    const float EPS = 0.000001f;
 
 
 
@@ -47,8 +48,19 @@ public:
         float distance;
         int primitiveHit = 0;
         float u, v;
+        float t;
         Vec3 intersectionPoint;
 
+        friend std::ostream& operator<<(std::ostream& os, const intersection& inter) {
+            os << "Distance: " << inter.distance << std::endl;
+            os << "Primitive Hit: " << inter.primitiveHit << std::endl;
+            os << "u: " << inter.u << std::endl;
+            os << "v: " << inter.v << std::endl;
+            os << "t: " << inter.t << std::endl;
+            os << "Intersection Point: (" << inter.intersectionPoint.values[0] << ", "
+               << inter.intersectionPoint.values[1] << ", " << inter.intersectionPoint.values[2] << ")" << std::endl;
+            return os;
+        }
     };
 
     float calculateDistance(Vec3 point1, Vec3 point2) {
@@ -74,10 +86,11 @@ public:
     std::vector<std::vector<Vec3>> generateLinOvercastRayField(float samplingDist);
     std::vector<std::vector<MeshIntersect::intersection>> gridPlaneIntersect(std::vector<std::vector<Vec3>> gridPlane);
     Vec3 computeVecPoint(MeshIntersect::intersection intersection);
-
+    std::vector<MeshIntersect::intersection> gridPlaneIntersectMollerTrombore(std::vector<std::vector<Vec3>> gridPlane);
     intersection rayIntersect(Ray& ray);
 
     std::vector<intersection> gridPlaneIntersectSimple(std::vector<std::vector<Vec3>> gridPlane);
+    std::vector<MeshIntersect::intersection> mollerTromboreRayIntersect(Ray ray);
 };
 
 

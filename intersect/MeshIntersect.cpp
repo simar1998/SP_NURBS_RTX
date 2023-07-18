@@ -461,6 +461,27 @@ std::vector<MeshIntersect::intersection> intersectList;
     return intersectList;
 }
 
+std::vector<MeshIntersect::intersection>
+MeshIntersect::gridPlaneIntersectMollerTrombore(std::vector<std::vector<Vec3>> gridPlane) {
+    std::vector<MeshIntersect::intersection> intersectList;
+    std::cout << "Performing gird intersect " << std::endl;
+    for (int i = 0; i <= gridPlane.size(); ++i) {
+        for (int j = 0; j < gridPlane[i].size(); ++j) {
+            //loadMesh(filePath);
+            auto ray = Ray {
+                    Vec3(gridPlane[i][j].values[0], gridPlane[i][j].values[1], gridPlane[i][j].values[2]), // Ray origin
+                    Vec3(0., 0., -1.0f), // Ray direction pointing down
+                    0.,               // Minimum intersection distance
+                    100.0f              // Maytxfximum intersection distance
+            };
+            std::vector<MeshIntersect::intersection> temp = mollerTromboreRayIntersect(ray);
+            intersectList.insert(intersectList.end(),temp.begin(),temp.end());
+        }
+        //std::cout  << "Interation " << std::endl;
+    }
+    return intersectList;
+}
+
 //Compute Vec3 point from barycentric cords and prim vertex values
 Vec3 MeshIntersect::computeVecPoint(MeshIntersect::intersection intersection) {
     float w = 1.0f - intersection.u - intersection.v;
@@ -545,6 +566,58 @@ MeshIntersect::intersection MeshIntersect::rayIntersect(MeshIntersect::Ray& ray)
         // No intersection found
     }
     return intersection;
+}
+/**
+ * Implementation of Moller Trombore ray intersection algorithim with prim culling
+ * @param ray
+ * @return
+ */
+std::vector<MeshIntersect::intersection> MeshIntersect::mollerTromboreRayIntersect(Ray ray){
+    std::vector<MeshIntersect::intersection> intersections;
+    for(int i; i < tris.size(); i++) {
+        MeshIntersect::intersection tempIntersect;
+        Vec3 edge1, edge2, tvec, pvec, qvec;
+        float det, inv_det;
+        // Finding vectors for two edges sharing vert0
+        edge1 = tris[i].p1 - tris[i].p0;
+        edge2 = tris[i].p2 - tris[i].p0;
+        //Start calulating determinant also used for calculating U param
+        pvec = cross(ray.dir,edge2);
+        det = dot(edge1,pvec); //if det value is close to zero than the ray lies in plane of tri
+        if (det < EPS){
+            continue;
+        }
+        tvec = ray.org - tris[i].p0;//calculates dist from vert0 to ray org
+        tempIntersect.u = dot(tvec,pvec);
+        if (tempIntersect.u < 0.0 || tempIntersect.u > det){ //Checks u value bounds and stops iteration if out of bounds
+            tempIntersect.primitiveHit = -1;
+            tempIntersect.originRay = ray;
+            intersections.push_back(tempIntersect);
+            continue;
+        }
+        qvec = cross(tvec,edge1);//Compare preparation
+        tempIntersect.v = dot(ray.dir,qvec);//Calculates v value and checks bounds
+        if (tempIntersect.v < 0.0 || tempIntersect.u + tempIntersect.v > det){
+            tempIntersect.primitiveHit = -1;
+            tempIntersect.originRay = ray;
+            intersections.push_back(tempIntersect);
+            continue;
+        }
+        //Calculate t scale params, ray intersects triangle
+        tempIntersect.t = dot(edge2,qvec);
+        inv_det = 1.0 / det;
+        //Setting values and pushing to stack
+        tempIntersect.t *= inv_det;
+        tempIntersect.u *= inv_det;
+        tempIntersect.v *= inv_det;
+        tempIntersect.primitiveHit = i;
+        tempIntersect.originRay = ray;
+        tempIntersect.intersectionPoint = computeVecPoint(tempIntersect);
+        std::cout << "Ray intersection detected at prim " << i << " at distance of " << tempIntersect.t << " At point " << tempIntersect.intersectionPoint.values[0] << "," << tempIntersect.intersectionPoint.values[1] << "," << tempIntersect.intersectionPoint.values[2] << "||" << std::endl;
+        //std::cout << tempIntersect;
+        intersections.push_back(tempIntersect);
+    }
+    return intersections;
 }
 
 
