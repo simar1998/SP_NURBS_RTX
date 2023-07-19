@@ -56,6 +56,34 @@ void testNurbs(){
    //tinynurbs::surfaceSaveOBJ(R"(C:\Code\SculptPlane\surface.obj)", srf);
 }
 
+void generateGCode(std::vector<MeshIntersect::intersection> intersections) {
+    std::ofstream file(R"(C:\code\SP_NURBS_RTX\test_mp_2.gcode)");
+    if (!file.is_open()) {
+        std::cerr << "Failed to open output.gcode for writing." << std::endl;
+        return;
+    }
+
+    // G-code header and initial setup
+    file << "G28 ; Home all axes" << std::endl;
+    file << "G21 ; Set units to millimeters" << std::endl;
+    file << "G90 ; Use absolute coordinates" << std::endl;
+    // Traverse the intersections
+    for (int i = 0; i < intersections.size(); i++) {
+        std::cout << "Iteration" << std::endl;
+        std::cout << intersections[i];
+        file << "G0 X" << intersections[i].intersectionPoint.values[0] + 150.0f
+             << " Y" << intersections[i].intersectionPoint.values[1] + 150.0f
+             << " Z" << intersections[i].intersectionPoint.values[2] << std::endl;
+    }
+
+
+    // G-code footer and ending commands
+    file << "G0 Z10 ; Move the tool head up" << std::endl;
+    file << "M84 ; Disable motors" << std::endl;
+
+    file.close();
+}
+
 int main(){
 
 //    Printer printer;
@@ -108,8 +136,10 @@ int main(){
     };
     //meshIntersect.perform_intersect(ray);
     meshIntersect.getMinMax(true);
-    std::vector<std::vector<Vec3>> grid = meshIntersect.generateLinOvercastRayField(0.5f);
-    meshIntersect.gridPlaneIntersectMollerTrombore(grid);
+    std::vector<std::vector<Vec3>> grid = meshIntersect.generateLinOvercastRayField(0.1f);
+    std::vector<MeshIntersect::intersection> intersectList = meshIntersect.gridPlaneIntersectMollerTrombore(grid);
+    std::cout << intersectList.size() << " Size of intersect list" << std::endl;
+    generateGCode(intersectList);
    // meshIntersect.getMinMax(true);
 
 //    std::cout << "Welcome to Sculpt Path" << std::endl;

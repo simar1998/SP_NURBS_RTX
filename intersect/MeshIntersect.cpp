@@ -475,10 +475,13 @@ MeshIntersect::gridPlaneIntersectMollerTrombore(std::vector<std::vector<Vec3>> g
                     100.0f              // Maytxfximum intersection distance
             };
             std::vector<MeshIntersect::intersection> temp = mollerTromboreRayIntersect(ray);
-            intersectList.insert(intersectList.end(),temp.begin(),temp.end());
+            if (!temp.empty()){
+                intersectList.insert(intersectList.end(),temp.begin(),temp.end());
+            }
         }
         //std::cout  << "Interation " << std::endl;
     }
+    std::cout << "Intersect list size " << intersectList.size() << std::endl;
     return intersectList;
 }
 
@@ -590,17 +593,11 @@ std::vector<MeshIntersect::intersection> MeshIntersect::mollerTromboreRayInterse
         tvec = ray.org - tris[i].p0;//calculates dist from vert0 to ray org
         tempIntersect.u = dot(tvec,pvec);
         if (tempIntersect.u < 0.0 || tempIntersect.u > det){ //Checks u value bounds and stops iteration if out of bounds
-            tempIntersect.primitiveHit = -1;
-            tempIntersect.originRay = ray;
-            intersections.push_back(tempIntersect);
             continue;
         }
         qvec = cross(tvec,edge1);//Compare preparation
         tempIntersect.v = dot(ray.dir,qvec);//Calculates v value and checks bounds
         if (tempIntersect.v < 0.0 || tempIntersect.u + tempIntersect.v > det){
-            tempIntersect.primitiveHit = -1;
-            tempIntersect.originRay = ray;
-            intersections.push_back(tempIntersect);
             continue;
         }
         //Calculate t scale params, ray intersects triangle
@@ -613,7 +610,7 @@ std::vector<MeshIntersect::intersection> MeshIntersect::mollerTromboreRayInterse
         tempIntersect.primitiveHit = i;
         tempIntersect.originRay = ray;
         tempIntersect.intersectionPoint = computeVecPoint(tempIntersect);
-        std::cout << "Ray intersection detected at prim " << i << " at distance of " << tempIntersect.t << " At point " << tempIntersect.intersectionPoint.values[0] << "," << tempIntersect.intersectionPoint.values[1] << "," << tempIntersect.intersectionPoint.values[2] << "||" << std::endl;
+        //std::cout << "Ray intersection detected at prim " << i << " at distance of " << tempIntersect.t << " At point " << tempIntersect.intersectionPoint.values[0] << "," << tempIntersect.intersectionPoint.values[1] << "," << tempIntersect.intersectionPoint.values[2] << "||" << std::endl;
         //std::cout << tempIntersect;
         intersections.push_back(tempIntersect);
     }
