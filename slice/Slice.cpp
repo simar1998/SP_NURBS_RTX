@@ -6,6 +6,7 @@
 #include "../intersect/MeshIntersect.h"
 #include "../clipper2/clipper.h"
 #include "../interpolation/Interpolation.h"
+#include "../sampling/Centroid.h"
 
 void Slice::beginSlice(std::string filePath, Printer printer) {
     MeshIntersect meshIntersect;
@@ -16,9 +17,13 @@ void Slice::beginSlice(std::string filePath, Printer printer) {
     float computedLayersMin = meshHeight / printer.getMinLayerHeight();//gets layer height based on min layer height
     float computedLayersMax = meshHeight / printer.getMaxLayerHeight();//^^ for max layer height
 
+
     //First layer print
     float firstLayerIntersect = minMax[0].values[2] + printer.getMinLayerHeight();
-    std::vector<Vec3> intPoints = meshIntersect.planeIntersect(firstLayerIntersect, true);
+    std::vector<Vec3> intPoints = meshIntersect.planeIntersect(firstLayerIntersect, true);//Gets points for initual layer perimeter
+
+    Centroid cent;
+    Vec3 centroid = cent.computeCentroid(intPoints);
 
     //convert points from meshIntersect to clipper values
     Clipper2Lib::Paths64 subj;

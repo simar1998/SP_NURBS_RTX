@@ -43,6 +43,19 @@ public:
 
     std::string filePath;
 
+    enum Classification{
+        OUTER,
+        INNER,
+    };
+
+    struct zIntersectInfo{
+        float layerHeight;
+        int layerNum;
+        Vec3 intersectPoint;
+        int prim;
+        Classification nature;
+    };
+
     struct intersection{
         Ray originRay;
         float distance;
@@ -91,6 +104,10 @@ public:
 
     std::vector<intersection> gridPlaneIntersectSimple(std::vector<std::vector<Vec3>> gridPlane);
     std::vector<MeshIntersect::intersection> mollerTromboreRayIntersect(Ray ray);
+
+    std::vector<zIntersectInfo> zPlaneIntersect(float z, bool printOut);
+
+    std::vector<zIntersectInfo> zPlaneIntersect(float z, int layerNum);
 };
 
 

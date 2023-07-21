@@ -136,7 +136,7 @@ int main(){
     };
     //meshIntersect.perform_intersect(ray);
     meshIntersect.getMinMax(true);
-    std::vector<std::vector<Vec3>> grid = meshIntersect.generateLinOvercastRayField(0.1f);
+    std::vector<std::vector<Vec3>> grid = meshIntersect.generateLinOvercastRayField(0.5f);
     std::vector<MeshIntersect::intersection> intersectList = meshIntersect.gridPlaneIntersectMollerTrombore(grid);
     std::cout << intersectList.size() << " Size of intersect list" << std::endl;
     generateGCode(intersectList);

@@ -205,6 +205,48 @@ std::vector<Vec3>  MeshIntersect::planeIntersect(float z, bool printOut) {
     return intersectionPoints;
 }
 
+/**
+ * For the itertive sampling technique.
+ * FIXME add classification logic
+ * @param z
+ * @param layerNum
+ * @return
+ */
+std::vector<MeshIntersect::zIntersectInfo>  MeshIntersect::zPlaneIntersect(float z, int layerNum) {
+    bool printOut = false;
+    std::vector<MeshIntersect::zIntersectInfo> zIntersects;
+    Vec3 planePoint(0.0f, 0.0f, z);
+    Vec3 normal(0.0f, 0.0f, 1.0f);
+    Plane zPlane(planePoint, normal);
+    for (std::size_t i = 0; i < tris.size(); i++) {
+        MeshIntersect::zIntersectInfo zInfo{};
+        zInfo.layerHeight = z;
+        zInfo.layerNum = layerNum;
+        zInfo.prim = i;
+        Tri tri = tris[i];
+        Vec3 edges[3] = {tri.p1 - tri.p0, tri.p2 - tri.p1, tri.p0 - tri.p2}; //edges of triangle
+        Vec3 points[3] = {tri.p0, tri.p1, tri.p2}; //points of triangle
+        for (int j = 0; j < 3; j++){
+            Vec3 direction = edges[j];
+            Vec3 origin = points[j];
+            float denom = dot(zPlane.normal, direction);
+            if (std::abs(denom) > 1e-6) { //check if line is not parallel to plane by comparing to eps value
+                float t = dot(zPlane.point - origin, zPlane.normal) / denom;
+                if (t >= 0 && t <= 1) { //check if intersection is on the line segment (edge)
+                    Vec3 intersection = origin + direction * t;
+                    zInfo.intersectPoint = intersection;
+                    zIntersects.push_back(zInfo);
+                    if (printOut) {
+                        std::cout << "Point calculated at : " << intersection.values[0] << "," << intersection.values[1]
+                                  << "," << intersection.values[2] << " For triangle num " << i << std::endl;
+                    }
+                }
+            }
+        }
+    }
+    return zIntersects;
+}
+
 void MeshIntersect::print_triangles() {
     if (tris.size() > 0) {
         for (std::size_t i = 0; i < tris.size(); i++) {
@@ -469,7 +511,7 @@ MeshIntersect::gridPlaneIntersectMollerTrombore(std::vector<std::vector<Vec3>> g
         for (int j = 0; j < gridPlane[i].size(); ++j) {
             //loadMesh(filePath);
             auto ray = Ray {
-                    Vec3(gridPlane[i][j].values[0], gridPlane[i][j].values[1], gridPlane[i][j].values[2]), // Ray origin
+                    Vec3(gridPlane[i][j].values[0], gridPlane[i][j].values[1], gridPlane[i][j].values[2] + overcastZvalOffset), // Ray origin
                     Vec3(0., 0., -1.0f), // Ray direction pointing down
                     0.,               // Minimum intersection distance
                     100.0f              // Maytxfximum intersection distance
@@ -610,7 +652,7 @@ std::vector<MeshIntersect::intersection> MeshIntersect::mollerTromboreRayInterse
         tempIntersect.primitiveHit = i;
         tempIntersect.originRay = ray;
         tempIntersect.intersectionPoint = computeVecPoint(tempIntersect);
-        //std::cout << "Ray intersection detected at prim " << i << " at distance of " << tempIntersect.t << " At point " << tempIntersect.intersectionPoint.values[0] << "," << tempIntersect.intersectionPoint.values[1] << "," << tempIntersect.intersectionPoint.values[2] << "||" << std::endl;
+        std::cout << "Ray intersection detected at prim " << i << " at distance of " << tempIntersect.t << " At point " << tempIntersect.intersectionPoint.values[0] << "," << tempIntersect.intersectionPoint.values[1] << "," << tempIntersect.intersectionPoint.values[2] << "||" << std::endl;
         //std::cout << tempIntersect;
         intersections.push_back(tempIntersect);
     }
