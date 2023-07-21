@@ -9,6 +9,7 @@
 #include "gcode/Printer.h"
 #include "slice/Slice.h"
 #include "simple_example.h"
+#include "operations/Analysis.h"
 //
 // Created by simar on 6/12/2023.
 //
@@ -134,12 +135,14 @@ int main(){
             0.,               // Minimum intersection distance
             50              // Maytxfximum intersection distance
     };
+    Analysis analysis;
+    analysis.performAnalysis(meshIntersect);
     //meshIntersect.perform_intersect(ray);
-    meshIntersect.getMinMax(true);
-    std::vector<std::vector<Vec3>> grid = meshIntersect.generateLinOvercastRayField(0.5f);
-    std::vector<MeshIntersect::intersection> intersectList = meshIntersect.gridPlaneIntersectMollerTrombore(grid);
-    std::cout << intersectList.size() << " Size of intersect list" << std::endl;
-    generateGCode(intersectList);
+    //meshIntersect.getMinMax(true);
+    //std::vector<std::vector<Vec3>> grid = meshIntersect.generateLinOvercastRayField(0.5f);
+    //std::vector<MeshIntersect::intersection> intersectList = meshIntersect.gridPlaneIntersectMollerTrombore(grid);
+    //std::cout << intersectList.size() << " Size of intersect list" << std::endl;
+    //generateGCode(intersectList);
    // meshIntersect.getMinMax(true);
 
 //    std::cout << "Welcome to Sculpt Path" << std::endl;

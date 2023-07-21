@@ -659,6 +659,10 @@ std::vector<MeshIntersect::intersection> MeshIntersect::mollerTromboreRayInterse
     return intersections;
 }
 
+std::vector<Tri> MeshIntersect::getTriangles(){
+    return tris;
+}
+
 
 
 

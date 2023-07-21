@@ -83,6 +83,7 @@ public:
         return std::sqrt(dx * dx + dy * dy + dz * dz);
     }
 
+    std::vector<Tri> getTriangles();
     void loadMesh(std::string filePath);
     std::vector<MeshIntersect::intersection> perform_intersect(bvh::v2::Ray<Scalar, 3> ray);
     void print_triangles();
