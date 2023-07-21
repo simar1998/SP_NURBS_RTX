@@ -6,8 +6,14 @@
 #define TINYNURBS_OFFSETGENERATOR_H
 
 
-class OffsetGenerator {
+#include "../mesh_calc/vec.h"
+#include "../intersect/MeshIntersect.h"
 
+class OffsetGenerator {
+    using Scalar = float;
+    using Vec3 = bvh::v2::Vec<Scalar, 3>;
+public:
+    static std::vector<Vec3> ParallelTransportMethod(std::vector<Vec3> points, float offsetDistance);
 };
 
 
