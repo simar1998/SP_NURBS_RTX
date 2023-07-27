@@ -19,9 +19,6 @@
 #include <iostream>
 #include <list>
 
-
-
-
 class MeshIntersect {
     using Scalar = float;
     using Vec3 = bvh::v2::Vec<Scalar, 3>;

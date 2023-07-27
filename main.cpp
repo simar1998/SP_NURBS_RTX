@@ -58,7 +58,7 @@ void testNurbs(){
 }
 
 void generateGCode(std::vector<MeshIntersect::intersection> intersections) {
-    std::ofstream file(R"(C:\code\SP_NURBS_RTX\test_mp_2.gcode)");
+    std::ofstream file(R"(C:\Code\SculptPlane\test_mp_2.obj)");
     if (!file.is_open()) {
         std::cerr << "Failed to open output.gcode for writing." << std::endl;
         return;
@@ -103,7 +103,7 @@ int main(){
 //    slice.beginSlice(R"(C:\code\SP_NURBS_RTX\test_mp_2.obj)", printer);
 //
 //    std::cout << "Welcome to Sculpt Path" << std::endl;
-    std::string filePath = R"(C:\code\SP_NURBS_RTX\test_mp_2.obj)";
+    std::string filePath = R"(C:\Code\SculptPlane\test_mp_2.obj)";
 //    std::cout<<"Loading file : "<<filePath <<std::endl;
 //    testNurbs();
 //    //printTriangles(filePath);
