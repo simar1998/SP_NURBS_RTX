@@ -103,7 +103,7 @@ int main(){
 //    slice.beginSlice(R"(C:\code\SP_NURBS_RTX\test_mp_2.obj)", printer);
 //
 //    std::cout << "Welcome to Sculpt Path" << std::endl;
-    std::string filePath = R"(C:\Code\SculptPlane\test_mp_2.obj)";
+    std::string filePath = R"(C:\Users\Simar\CLionProjects\SP_NURBS_RTX\test_mp_2.obj)";
 //    std::cout<<"Loading file : "<<filePath <<std::endl;
 //    testNurbs();
 //    //printTriangles(filePath);

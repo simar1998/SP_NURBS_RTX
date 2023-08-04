@@ -69,24 +69,36 @@ std::vector<int> Analysis::kmeansClustering(const std::vector<float>& embeddings
 }
 
 
-
+//Using gausian curvature
 float Analysis::calculateCurvature(const Analysis::Tri &triangle) {
-    // Perform your curvature calculation here
-    // For this example, let's assume we calculate the average of the three edge lengths
-    float edge1 = std::sqrt((triangle.p0.values[0] - triangle.p1.values[0]) * (triangle.p0.values[0] - triangle.p1.values[0]) +
-                            (triangle.p0.values[1] - triangle.p1.values[1]) * (triangle.p0.values[1] - triangle.p1.values[1]) +
-                            (triangle.p0.values[2] - triangle.p1.values[2]) * (triangle.p0.values[2] - triangle.p1.values[2]));
-    float edge2 = std::sqrt((triangle.p1.values[0] - triangle.p2.values[0]) * (triangle.p1.values[0] - triangle.p2.values[0]) +
-                            (triangle.p1.values[1] - triangle.p2.values[1]) * (triangle.p1.values[1] - triangle.p2.values[1]) +
-                            (triangle.p1.values[2] - triangle.p2.values[2]) * (triangle.p1.values[2] - triangle.p2.values[2]));
-    float edge3 = std::sqrt((triangle.p2.values[0] - triangle.p0.values[0]) * (triangle.p2.values[0] - triangle.p0.values[0]) +
-                            (triangle.p2.values[1] - triangle.p0.values[1]) * (triangle.p2.values[1] - triangle.p0.values[1]) +
-                            (triangle.p2.values[2] - triangle.p0.values[2]) * (triangle.p2.values[2] - triangle.p0.values[2]));
+    // Define the edges
+    std::vector<float> edge1(3), edge2(3), edge3(3);
+    for (int i = 0; i < 3; ++i) {
+        edge1[i] = triangle.p1.values[i] - triangle.p0.values[i];
+        edge2[i] = triangle.p2.values[i] - triangle.p1.values[i];
+        edge3[i] = triangle.p0.values[i] - triangle.p2.values[i];
+    }
 
-    return (edge1 + edge2 + edge3) / 3.0f; // Average edge length as an example of curvature
+    // Compute the cross products of the edges
+    std::vector<float> cross1(3), cross2(3);
+    cross1[0] = edge1[1] * edge2[2] - edge1[2] * edge2[1];
+    cross1[1] = edge1[2] * edge2[0] - edge1[0] * edge2[2];
+    cross1[2] = edge1[0] * edge2[1] - edge1[1] * edge2[0];
 
+    cross2[0] = edge2[1] * edge3[2] - edge2[2] * edge3[1];
+    cross2[1] = edge2[2] * edge3[0] - edge2[0] * edge3[2];
+    cross2[2] = edge2[0] * edge3[1] - edge2[1] * edge3[0];
 
+    // Compute the norms of the cross products
+    float normCross1 = std::sqrt(cross1[0] * cross1[0] + cross1[1] * cross1[1] + cross1[2] * cross1[2]);
+    float normCross2 = std::sqrt(cross2[0] * cross2[0] + cross2[1] * cross2[1] + cross2[2] * cross2[2]);
+
+    // Compute the mean curvature
+    float meanCurvature = 0.5f * (normCross1 + normCross2);
+
+    return meanCurvature;
 }
+
 
 float Analysis::gaussianRBFKernel(float distance, float sigma) {
     return std::exp(-distance / (2 * sigma * sigma));
