@@ -9,6 +9,8 @@
 #include "../mesh_calc/tri.h"
 
 class BooleanOperation {
+
+
 private:
     using Scalar = float;
     using Vec3 = bvh::v2::Vec<Scalar, 3>;
@@ -23,6 +25,8 @@ public:
     std::vector<Tri> subtract();
 
     bool intersects(const Tri &tri1, const Tri &tri2);
+
+
 };
 
 

@@ -432,6 +432,8 @@ std::vector<std::vector<Vec3>> MeshIntersect::generateOvercastRayField() {
 
     return grid;
 }
+
+
 std::vector<std::vector<Vec3>> MeshIntersect::generateLinOvercastRayField(float samplingDist) {
 
     std::vector<Vec3> minMax = getMinMax();
@@ -503,6 +505,14 @@ std::vector<MeshIntersect::intersection> intersectList;
     return intersectList;
 }
 
+/**
+ * Working and samples the top of the mesh correctly if provided gridplane object
+ * Iterates over the grid plane points and shoots rays down onto the mesh and usses
+ * Moller Trombore intersection method to calculate intersection point with the mesh
+ * It is tested and is indeed working.
+ * @param gridPlane
+ * @return
+ */
 std::vector<MeshIntersect::intersection>
 MeshIntersect::gridPlaneIntersectMollerTrombore(std::vector<std::vector<Vec3>> gridPlane) {
     std::vector<MeshIntersect::intersection> intersectList;
@@ -535,7 +545,7 @@ Vec3 MeshIntersect::computeVecPoint(MeshIntersect::intersection intersection) {
 }
 
 //Fixme Creates intersection values outside of the min max value for some reason
-/**
+/**@deprecated
  * Slower but pherhaps better and more consistent ray intersect method, takes one ray param and returns a intersection struct with data pretaining to the intersection
  * @param ray
  * @return

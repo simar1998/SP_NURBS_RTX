@@ -10,6 +10,7 @@
 #include "slice/Slice.h"
 #include "simple_example.h"
 #include "operations/Analysis.h"
+#include "datastruct/HalfEdge.h"
 //
 // Created by simar on 6/12/2023.
 //
@@ -103,7 +104,7 @@ int main(){
 //    slice.beginSlice(R"(C:\code\SP_NURBS_RTX\test_mp_2.obj)", printer);
 //
 //    std::cout << "Welcome to Sculpt Path" << std::endl;
-    std::string filePath = R"(C:\Users\Simar\CLionProjects\SP_NURBS_RTX\test_mp_2.obj)";
+    std::string filePath = R"(C:\Code\SculptPlane\test_mp_2.obj)";
 //    std::cout<<"Loading file : "<<filePath <<std::endl;
 //    testNurbs();
 //    //printTriangles(filePath);
@@ -137,6 +138,11 @@ int main(){
     };
     Analysis analysis;
     analysis.performAnalysis(meshIntersect);
+
+    HalfEdge he;
+    he.loadMesh(meshIntersect.filePath);
+    he.generateHalfEdge();
+    he.walkMesh();
     //meshIntersect.perform_intersect(ray);
     //meshIntersect.getMinMax(true);
     //std::vector<std::vector<Vec3>> grid = meshIntersect.generateLinOvercastRayField(0.5f);
