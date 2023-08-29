@@ -673,6 +673,10 @@ std::vector<Tri> MeshIntersect::getTriangles(){
     return tris;
 }
 
+bool MeshIntersect::isTrisIntersect(Tri tri1, Tri tri2) {
+    return false;
+}
+
 std::vector<MeshIntersect::intersection> mollerTromboreIntersect(Ray ray){
     std::vector<MeshIntersect::intersection> empty;
     return empty;

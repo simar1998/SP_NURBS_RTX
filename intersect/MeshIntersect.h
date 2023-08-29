@@ -106,6 +106,8 @@ public:
     std::vector<zIntersectInfo> zPlaneIntersect(float z, bool printOut);
 
     std::vector<zIntersectInfo> zPlaneIntersect(float z, int layerNum);
+
+    bool isTrisIntersect(Tri tri1, Tri tri2);
 };
 
 
