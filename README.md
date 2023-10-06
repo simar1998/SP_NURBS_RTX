@@ -29,4 +29,4 @@ Notes: I am currenlty a bit tilted but will try to work on some cool ideas
   some sort of decision logic that determines the lower z axis bound of the ray intersection points generated I think I can generate a non 
   planar tool path generation engine for FFF 3D printers. 
   
-
+***** Project rebased onto https://github.com/simar1998/SculptPath ******
