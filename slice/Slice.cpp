@@ -45,3 +45,13 @@ void Slice::beginSlice(std::string filePath, Printer printer) {
 
 
 }
+
+void Slice::booleanSlice(std::string filePath, Printer printer) {
+    MeshIntersect meshIntersect;
+    meshIntersect.loadMesh(filePath);
+
+    //Start ray generation on an offseet plane of the top of the mesh
+
+
+
+}

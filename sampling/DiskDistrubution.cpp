@@ -6,7 +6,12 @@
 #include <array>
 #include <vector>
 
+/**
+ * Poissions disk distrubution algo
+ * @param tris
+ */
 void DiskDistrubution::diskDisturbution(std::vector<Tri> tris) {
+
 
 
 }

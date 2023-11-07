@@ -4,7 +4,9 @@
 
 #ifndef TINYNURBS_RAYGENERATOR_H
 #define TINYNURBS_RAYGENERATOR_H
-
+/**
+ * Used for hueristic viume searching algo
+ */
 
 #include "../mesh_calc/vec.h"
 #include "../mesh_calc/ray.h"

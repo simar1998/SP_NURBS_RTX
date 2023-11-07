@@ -16,6 +16,7 @@ class Slice {
 
 public:
     void beginSlice(std::string filePath, Printer printer);
+    void booleanSlice(std::string filePath, Printer printer);
 };
 
 

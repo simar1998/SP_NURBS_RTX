@@ -5,6 +5,10 @@
 #include <random>
 #include "Analysis.h"
 
+/**
+ * Program entry for starting the computational anaylsis for the K means clsutering
+ * @param mesh
+ */
 void Analysis::performAnalysis(MeshIntersect mesh) {
     std::vector<float> hilbertSpaceEmbeddings = embedTrianglesInHilbertSpace(mesh.getTriangles());
     // Perform k-means clustering with k = 3 (you can adjust k as needed)
@@ -18,7 +22,13 @@ void Analysis::performAnalysis(MeshIntersect mesh) {
     }
 
 }
-
+/**
+ * Testing K-Means clustering on the geometry
+ * @param embeddings
+ * @param k
+ * @param maxIterations
+ * @return
+ */
 std::vector<int> Analysis::kmeansClustering(const std::vector<float>& embeddings, int k, int maxIterations = 100) {
     std::vector<int> clusterAssignments(embeddings.size());
 
@@ -68,7 +78,11 @@ std::vector<int> Analysis::kmeansClustering(const std::vector<float>& embeddings
     return clusterAssignments;
 }
 
-
+/**
+ * Calculating curvature
+ * @param triangle
+ * @return
+ */
 //Using gausian curvature
 float Analysis::calculateCurvature(const Analysis::Tri &triangle) {
     // Define the edges
@@ -100,10 +114,21 @@ float Analysis::calculateCurvature(const Analysis::Tri &triangle) {
 }
 
 
+/**
+ * Implementation of the gausian radial basis function kernal to be used to determine curvature
+ * @param distance
+ * @param sigma
+ * @return
+ */
 float Analysis::gaussianRBFKernel(float distance, float sigma) {
     return std::exp(-distance / (2 * sigma * sigma));
 }
 
+/**
+ * Adds the triangles from the list of tris object onto the hilbert space to be used for computational analysis
+ * @param triangles
+ * @return
+ */
 std::vector<float> Analysis::embedTrianglesInHilbertSpace(const std::vector<Tri> &triangles) {
     const float sigma = 1.0f; // Sigma parameter for the RBF kernel
 
