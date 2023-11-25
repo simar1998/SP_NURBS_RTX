@@ -7,7 +7,7 @@ higher-quality 3D print with better surface finishing and increased structural i
 capabilites, and hopefully allowing designers to make parts with funtianlities that are not yet at the time of writing possible. 
 
 
-Notes: I am currenlty a bit tilted but will try to work on some cool ideas
+
 - The following section is rough notes if you will. The goal is to conjure ideas to determining logic for non plannar gcode generation.
 
   - A method woud be to perform z axis intersections on the mesh at a pre determinied z sampling rate. 
